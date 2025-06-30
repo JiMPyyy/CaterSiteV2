@@ -1,26 +1,387 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, X, Calendar, Clock, MapPin, Users, FileText } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { scheduleService, Schedule, CreateScheduleData } from '@/lib/services/schedules';
+import Navigation from '@/components/layout/Navigation';
 
 export default function SchedulePage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-center mb-6">Order Schedule</h1>
+  const { isAuthenticated, user } = useAuth();
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<CreateScheduleData>({
+    title: '',
+    date: '',
+    time: '',
+    description: '',
+    attendees: 1,
+    location: '',
+    notes: ''
+  });
 
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        editable
-        selectable
-        events={[
-          { title: 'John Smith – 12:00 PM', date: '2025-07-01' },
-          { title: 'Sarah Johnson – 11:30 AM', date: '2025-07-02' },
-        ]}
-        height="auto"
-      />
+  // Fetch schedules on component mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSchedules();
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  const fetchSchedules = async () => {
+    try {
+      setIsLoading(true);
+      const response = await scheduleService.getSchedules();
+      setSchedules(response.data.schedules);
+    } catch (error: any) {
+      console.error('Failed to fetch schedules:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDateSelect = (selectInfo: any) => {
+    if (!isAuthenticated) {
+      alert('Please log in to create schedules');
+      return;
+    }
+
+    setSelectedSchedule(null);
+    setFormData({
+      title: '',
+      date: selectInfo.startStr,
+      time: '12:00',
+      description: '',
+      attendees: 1,
+      location: '',
+      notes: ''
+    });
+    setShowModal(true);
+  };
+
+  const handleEventClick = (clickInfo: any) => {
+    const schedule = clickInfo.event.extendedProps.schedule;
+    setSelectedSchedule(schedule);
+    setFormData({
+      title: schedule.title,
+      date: schedule.date.split('T')[0], // Extract date part
+      time: schedule.time,
+      description: schedule.description || '',
+      attendees: schedule.attendees || 1,
+      location: schedule.location || '',
+      notes: schedule.notes || ''
+    });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      if (selectedSchedule) {
+        // Update existing schedule
+        await scheduleService.updateSchedule(selectedSchedule._id, formData);
+      } else {
+        // Create new schedule
+        await scheduleService.createSchedule(formData);
+      }
+
+      await fetchSchedules(); // Refresh the calendar
+      setShowModal(false);
+      resetForm();
+    } catch (error: any) {
+      alert(error.message || 'Failed to save schedule');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedSchedule) return;
+
+    if (confirm('Are you sure you want to delete this schedule?')) {
+      try {
+        await scheduleService.deleteSchedule(selectedSchedule._id);
+        await fetchSchedules(); // Refresh the calendar
+        setShowModal(false);
+        resetForm();
+      } catch (error: any) {
+        alert(error.message || 'Failed to delete schedule');
+      }
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      date: '',
+      time: '',
+      description: '',
+      attendees: 1,
+      location: '',
+      notes: ''
+    });
+    setSelectedSchedule(null);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'attendees' ? parseInt(value) || 1 : value
+    }));
+  };
+
+  // Convert schedules to FullCalendar events
+  const calendarEvents = schedules.map(schedule => scheduleService.toCalendarEvent(schedule));
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
+          <Calendar className="mx-auto text-gray-400 mb-4" size={64} />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600">Please log in to view and manage your schedules.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Event Schedule</h1>
+          <button
+            onClick={() => {
+              setSelectedSchedule(null);
+              resetForm();
+              setShowModal(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            <Plus size={20} />
+            New Event
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              }}
+              editable={true}
+              selectable={true}
+              selectMirror={true}
+              dayMaxEvents={true}
+              weekends={true}
+              events={calendarEvents}
+              select={handleDateSelect}
+              eventClick={handleEventClick}
+              height="auto"
+              eventDisplay="block"
+              eventBackgroundColor="#3b82f6"
+              eventBorderColor="#2563eb"
+              eventTextColor="#ffffff"
+            />
+          </div>
+        )}
+
+        {/* Schedule Modal */}
+        <AnimatePresence>
+          {showModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowModal(false)}
+            >
+              <motion.div
+                initial={{ y: 20, opacity: 0, scale: 0.96 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 20, opacity: 0, scale: 0.96 }}
+                onClick={e => e.stopPropagation()}
+                className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {selectedSchedule ? 'Edit Event' : 'New Event'}
+                  </h3>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Event Title *
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="Team lunch meeting"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {/* Date and Time */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                        <Calendar size={14} />
+                        Date *
+                      </label>
+                      <input
+                        type="date"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleInputChange}
+                        required
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                        <Clock size={14} />
+                        Time *
+                      </label>
+                      <input
+                        type="time"
+                        name="time"
+                        value={formData.time}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Attendees and Location */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                        <Users size={14} />
+                        Attendees
+                      </label>
+                      <input
+                        type="number"
+                        name="attendees"
+                        value={formData.attendees}
+                        onChange={handleInputChange}
+                        min="1"
+                        max="1000"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                        <MapPin size={14} />
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        placeholder="Conference Room A"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows={3}
+                      placeholder="Event description..."
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {/* Notes */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <FileText size={14} />
+                      Notes
+                    </label>
+                    <textarea
+                      name="notes"
+                      value={formData.notes}
+                      onChange={handleInputChange}
+                      rows={2}
+                      placeholder="Additional notes..."
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    {selectedSchedule && (
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+                      >
+                        Delete
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                    >
+                      {isSubmitting ? 'Saving...' : selectedSchedule ? 'Update' : 'Create'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

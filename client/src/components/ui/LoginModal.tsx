@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
   isOpen: boolean;
@@ -9,6 +10,12 @@ interface Props {
 }
 
 export default function LoginModal({ isOpen, onClose }: Props) {
+  const { login, isLoading, error, clearError } = useAuth();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
+
   /* ⬥ close on Esc */
   useEffect(() => {
     if (!isOpen) return;
@@ -16,6 +23,30 @@ export default function LoginModal({ isOpen, onClose }: Props) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
+
+  // Clear error when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      clearError();
+      setFormData({ username: '', password: '' });
+    }
+  }, [isOpen, clearError]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await login(formData);
+      onClose(); // Close modal on successful login
+    } catch (error) {
+      // Error is handled by the auth context
+      console.error('Login failed:', error);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -50,15 +81,26 @@ export default function LoginModal({ isOpen, onClose }: Props) {
               Login to CaterVegas&nbsp;🎲
             </h2>
 
-            <form className="space-y-5">
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
               {/* username */}
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Username</span>
                 <input
                   type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
                   required
                   placeholder="Enter your username"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
@@ -67,18 +109,23 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                 <span className="text-sm font-medium text-gray-700">Password</span>
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   required
                   placeholder="Enter your password"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
               {/* submit */}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-blue-600 py-2 font-semibold text-white shadow hover:bg-blue-700 transition"
+                disabled={isLoading}
+                className="w-full rounded-xl bg-blue-600 py-2 font-semibold text-white shadow hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Login
+                {isLoading ? 'Logging in...' : 'Login'}
               </button>
             </form>
           </motion.div>

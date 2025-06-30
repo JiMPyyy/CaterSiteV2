@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
   isOpen: boolean;
@@ -9,6 +10,15 @@ interface Props {
 }
 
 export default function SignupModal({ isOpen, onClose }: Props) {
+  const { register, isLoading, error, clearError } = useAuth();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: ''
+  });
+
   // Close on ESC
   useEffect(() => {
     if (!isOpen) return;
@@ -16,6 +26,42 @@ export default function SignupModal({ isOpen, onClose }: Props) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
+
+  // Clear error when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      clearError();
+      setFormData({
+        username: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: ''
+      });
+    }
+  }, [isOpen, clearError]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Client-side validation
+    if (formData.password !== formData.confirmPassword) {
+      return; // This will be handled by the backend validation
+    }
+
+    try {
+      await register(formData);
+      onClose(); // Close modal on successful registration
+    } catch (error) {
+      // Error is handled by the auth context
+      console.error('Registration failed:', error);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -48,15 +94,26 @@ export default function SignupModal({ isOpen, onClose }: Props) {
               Create Your CaterVegas Account&nbsp;✨
             </h2>
 
-            <form className="space-y-5">
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
               {/* username */}
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Username</span>
                 <input
                   type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
                   required
                   placeholder="Choose a username"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
@@ -65,9 +122,13 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                 <span className="text-sm font-medium text-gray-700">Email</span>
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   required
                   placeholder="you@example.com"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
@@ -76,8 +137,12 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                 <span className="text-sm font-medium text-gray-700">Phone</span>
                 <input
                   type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
                   placeholder="(702) 555‑5555"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
@@ -86,9 +151,13 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                 <span className="text-sm font-medium text-gray-700">Password</span>
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   required
                   placeholder="Create a password"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
@@ -97,17 +166,22 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                 <span className="text-sm font-medium text-gray-700">Confirm Password</span>
                 <input
                   type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
                   required
                   placeholder="Re-enter password"
                   className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  disabled={isLoading}
                 />
               </label>
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-blue-600 py-2 font-semibold text-white shadow hover:bg-blue-700 transition"
+                disabled={isLoading}
+                className="w-full rounded-xl bg-blue-600 py-2 font-semibold text-white shadow hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign Up
+                {isLoading ? 'Creating Account...' : 'Sign Up'}
               </button>
             </form>
           </motion.div>

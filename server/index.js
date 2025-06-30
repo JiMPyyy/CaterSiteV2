@@ -1,23 +1,25 @@
 // server/index.js
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/database');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Connect to database
+connectDB();
 
 // Middleware
 app.use(express.json());
 
-// Basic CORS middleware (replace with cors package if needed)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
+// CORS middleware
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+}));
 
 // Routes
 app.get('/', (req, res) => {
@@ -27,6 +29,17 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+// API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/schedules', require('./routes/schedules'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/admin', require('./routes/admin'));
+
+// Error handling middleware
+const { errorHandler, notFound } = require('./middleware/errorHandler');
+app.use(notFound);
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {

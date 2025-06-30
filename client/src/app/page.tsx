@@ -2,17 +2,18 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Calendar, ShoppingCart, User } from 'lucide-react';
+import { Calendar, ShoppingCart, User, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
 import LoginModal from '@/components/ui/LoginModal';
 import SignupModal from '@/components/ui/SignupModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { user, isAuthenticated, logout } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  // const [showSignup, setShowSignup] = useState(false);
   return (
     <div className="flex min-h-screen flex-col font-sans text-gray-900 bg-white">
       {/* nav */}
@@ -25,12 +26,31 @@ export default function Home() {
           <nav className="flex gap-6 text-sm font-medium items-center">
             <Link href="/order" className="transition hover:text-primary">Order</Link>
             <Link href="/schedule" className="transition hover:text-primary">Schedule</Link>
-            <button onClick={() => setShowSignup(true)} className="transition hover:text-primary cursor-pointer bg-transparent border-none p-0">
-              <span>Sign Up</span>
-            </button>
-            <button onClick={() => setShowLogin(true)} className="transition hover:text-primary cursor-pointer">
-              <span>Login</span>
-            </button>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <span className="text-gray-600">Welcome, {user?.username}!</span>
+                <Link href="/profile" className="transition hover:text-primary">
+                  Profile
+                </Link>
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 transition hover:text-primary cursor-pointer"
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <>
+                <button onClick={() => setShowSignup(true)} className="transition hover:text-primary cursor-pointer bg-transparent border-none p-0">
+                  <span>Sign Up</span>
+                </button>
+                <button onClick={() => setShowLogin(true)} className="transition hover:text-primary cursor-pointer">
+                  <span>Login</span>
+                </button>
+              </>
+            )}
           </nav>
         </div>
       </header>
