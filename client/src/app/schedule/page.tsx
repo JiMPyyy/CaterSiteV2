@@ -1,21 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Calendar, Clock, MapPin, Users, FileText } from 'lucide-react';
+import { Plus, X, Calendar, Clock, MapPin, Users, FileText, ShoppingCart, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { scheduleService, Schedule, CreateScheduleData } from '@/lib/services/schedules';
 import Navigation from '@/components/layout/Navigation';
 
 export default function SchedulePage() {
   const { isAuthenticated, user } = useAuth();
+  const router = useRouter();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showActionModal, setShowActionModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateScheduleData>({
@@ -51,21 +55,25 @@ export default function SchedulePage() {
 
   const handleDateSelect = (selectInfo: any) => {
     if (!isAuthenticated) {
-      alert('Please log in to create schedules');
+      alert('Please log in to manage schedules');
       return;
     }
 
-    setSelectedSchedule(null);
-    setFormData({
-      title: '',
-      date: selectInfo.startStr,
-      time: '12:00',
-      description: '',
-      attendees: 1,
-      location: '',
-      notes: ''
-    });
-    setShowModal(true);
+    const clickedDate = selectInfo.startStr;
+    setSelectedDate(clickedDate);
+
+    // Check if there's already a schedule on this date
+    const existingSchedule = schedules.find(schedule =>
+      schedule.date.split('T')[0] === clickedDate
+    );
+
+    if (existingSchedule) {
+      setSelectedSchedule(existingSchedule);
+    } else {
+      setSelectedSchedule(null);
+    }
+
+    setShowActionModal(true);
   };
 
   const handleEventClick = (clickInfo: any) => {
@@ -81,6 +89,43 @@ export default function SchedulePage() {
       notes: schedule.notes || ''
     });
     setShowModal(true);
+  };
+
+  // Handle creating a new order
+  const handleCreateOrder = () => {
+    setShowActionModal(false);
+    router.push('/order');
+  };
+
+  // Handle creating a new schedule
+  const handleCreateSchedule = () => {
+    setShowActionModal(false);
+    setSelectedSchedule(null);
+    setFormData({
+      title: '',
+      date: selectedDate,
+      time: '12:00',
+      description: '',
+      attendees: 1,
+      location: '',
+      notes: ''
+    });
+    setShowModal(true);
+  };
+
+  // Handle deleting a schedule
+  const handleDeleteScheduleFromDate = async () => {
+    if (!selectedSchedule) return;
+
+    if (confirm(`Are you sure you want to delete the event "${selectedSchedule.title}"?`)) {
+      try {
+        await scheduleService.deleteSchedule(selectedSchedule._id);
+        await fetchSchedules(); // Refresh the calendar
+        setShowActionModal(false);
+      } catch (error: any) {
+        alert(error.message || 'Failed to delete schedule');
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -377,6 +422,95 @@ export default function SchedulePage() {
                     </button>
                   </div>
                 </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Action Modal - Choose between Create Order, Create Schedule, or Delete Schedule */}
+        <AnimatePresence>
+          {showActionModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowActionModal(false)}
+            >
+              <motion.div
+                initial={{ y: 20, opacity: 0, scale: 0.96 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 20, opacity: 0, scale: 0.96 }}
+                onClick={e => e.stopPropagation()}
+                className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {selectedDate && new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </h3>
+                  <button
+                    onClick={() => setShowActionModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Show existing schedule info if there is one */}
+                  {selectedSchedule && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <h4 className="font-medium text-blue-900 mb-1">Existing Event:</h4>
+                      <p className="text-blue-800">{selectedSchedule.title}</p>
+                      <p className="text-blue-600 text-sm">{selectedSchedule.time}</p>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    {/* Create Order Button */}
+                    <button
+                      onClick={handleCreateOrder}
+                      className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-3"
+                    >
+                      <ShoppingCart size={20} />
+                      <span>Create Order for this Date</span>
+                    </button>
+
+                    {/* Create Schedule Button */}
+                    <button
+                      onClick={handleCreateSchedule}
+                      className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-3"
+                    >
+                      <Calendar size={20} />
+                      <span>Create New Event</span>
+                    </button>
+
+                    {/* Delete Schedule Button - Only show if there's an existing schedule */}
+                    {selectedSchedule && (
+                      <button
+                        onClick={handleDeleteScheduleFromDate}
+                        className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-3"
+                      >
+                        <Trash2 size={20} />
+                        <span>Delete "{selectedSchedule.title}"</span>
+                      </button>
+                    )}
+
+                    {/* Cancel Button */}
+                    <button
+                      onClick={() => setShowActionModal(false)}
+                      className="w-full bg-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-400 transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
           )}
