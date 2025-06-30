@@ -10,17 +10,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, Calendar, Clock, MapPin, Users, FileText, ShoppingCart, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { scheduleService, Schedule, CreateScheduleData } from '@/lib/services/schedules';
+import { orderService, Order } from '@/lib/services/orders';
 import Navigation from '@/components/layout/Navigation';
 
 export default function SchedulePage() {
   const { isAuthenticated, user } = useAuth();
   const router = useRouter();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showActionModal, setShowActionModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CreateScheduleData>({
     title: '',
@@ -32,24 +35,37 @@ export default function SchedulePage() {
     notes: ''
   });
 
-  // Fetch schedules on component mount
+  // Fetch schedules and orders on component mount
   useEffect(() => {
     if (isAuthenticated) {
-      fetchSchedules();
+      fetchData();
     } else {
       setIsLoading(false);
     }
   }, [isAuthenticated]);
 
-  const fetchSchedules = async () => {
+  const fetchData = async () => {
     try {
       setIsLoading(true);
+      const [schedulesResponse, ordersResponse] = await Promise.all([
+        scheduleService.getSchedules(),
+        orderService.getOrders()
+      ]);
+      setSchedules(schedulesResponse.data.schedules);
+      setOrders(ordersResponse.data.orders);
+    } catch (error: any) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchSchedules = async () => {
+    try {
       const response = await scheduleService.getSchedules();
       setSchedules(response.data.schedules);
     } catch (error: any) {
       console.error('Failed to fetch schedules:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -67,28 +83,39 @@ export default function SchedulePage() {
       schedule.date.split('T')[0] === clickedDate
     );
 
-    if (existingSchedule) {
-      setSelectedSchedule(existingSchedule);
-    } else {
-      setSelectedSchedule(null);
-    }
+    // Check if there's already an order on this date
+    const existingOrder = orders.find(order =>
+      order.deliveryDate.split('T')[0] === clickedDate
+    );
+
+    setSelectedSchedule(existingSchedule || null);
+    setSelectedOrder(existingOrder || null);
 
     setShowActionModal(true);
   };
 
   const handleEventClick = (clickInfo: any) => {
-    const schedule = clickInfo.event.extendedProps.schedule;
-    setSelectedSchedule(schedule);
-    setFormData({
-      title: schedule.title,
-      date: schedule.date.split('T')[0], // Extract date part
-      time: schedule.time,
-      description: schedule.description || '',
-      attendees: schedule.attendees || 1,
-      location: schedule.location || '',
-      notes: schedule.notes || ''
-    });
-    setShowModal(true);
+    const eventData = clickInfo.event.extendedProps;
+
+    if (eventData.schedule) {
+      // It's a schedule event
+      const schedule = eventData.schedule;
+      setSelectedSchedule(schedule);
+      setFormData({
+        title: schedule.title,
+        date: schedule.date.split('T')[0], // Extract date part
+        time: schedule.time,
+        description: schedule.description || '',
+        attendees: schedule.attendees || 1,
+        location: schedule.location || '',
+        notes: schedule.notes || ''
+      });
+      setShowModal(true);
+    } else if (eventData.order) {
+      // It's an order event - redirect to order details or show info
+      const order = eventData.order;
+      alert(`Order #${order.orderNumber}\nTotal: $${order.totalAmount.toFixed(2)}\nStatus: ${orderService.formatStatus(order.status)}\nDelivery: ${order.deliveryTime}`);
+    }
   };
 
   // Handle creating a new order
@@ -120,10 +147,25 @@ export default function SchedulePage() {
     if (confirm(`Are you sure you want to delete the event "${selectedSchedule.title}"?`)) {
       try {
         await scheduleService.deleteSchedule(selectedSchedule._id);
-        await fetchSchedules(); // Refresh the calendar
+        await fetchData(); // Refresh both schedules and orders
         setShowActionModal(false);
       } catch (error: any) {
         alert(error.message || 'Failed to delete schedule');
+      }
+    }
+  };
+
+  // Handle deleting an order
+  const handleDeleteOrderFromDate = async () => {
+    if (!selectedOrder) return;
+
+    if (confirm(`Are you sure you want to cancel order #${selectedOrder.orderNumber}?`)) {
+      try {
+        await orderService.cancelOrder(selectedOrder._id);
+        await fetchData(); // Refresh both schedules and orders
+        setShowActionModal(false);
+      } catch (error: any) {
+        alert(error.message || 'Failed to cancel order');
       }
     }
   };
@@ -141,7 +183,7 @@ export default function SchedulePage() {
         await scheduleService.createSchedule(formData);
       }
 
-      await fetchSchedules(); // Refresh the calendar
+      await fetchData(); // Refresh both schedules and orders
       setShowModal(false);
       resetForm();
     } catch (error: any) {
@@ -157,7 +199,7 @@ export default function SchedulePage() {
     if (confirm('Are you sure you want to delete this schedule?')) {
       try {
         await scheduleService.deleteSchedule(selectedSchedule._id);
-        await fetchSchedules(); // Refresh the calendar
+        await fetchData(); // Refresh both schedules and orders
         setShowModal(false);
         resetForm();
       } catch (error: any) {
@@ -187,8 +229,27 @@ export default function SchedulePage() {
     }));
   };
 
-  // Convert schedules to FullCalendar events
-  const calendarEvents = schedules.map(schedule => scheduleService.toCalendarEvent(schedule));
+  // Convert schedules and orders to FullCalendar events
+  const scheduleEvents = schedules.map(schedule => scheduleService.toCalendarEvent(schedule));
+
+  const orderEvents = orders.map(order => ({
+    id: `order-${order._id}`,
+    title: `🍽️ Order #${order.orderNumber} - ${order.deliveryTime}`,
+    date: order.deliveryDate.split('T')[0],
+    backgroundColor: order.status === 'delivered' ? '#10b981' :
+                    order.status === 'cancelled' ? '#ef4444' :
+                    order.status === 'confirmed' ? '#3b82f6' : '#f59e0b',
+    borderColor: order.status === 'delivered' ? '#059669' :
+                order.status === 'cancelled' ? '#dc2626' :
+                order.status === 'confirmed' ? '#2563eb' : '#d97706',
+    textColor: '#ffffff',
+    extendedProps: {
+      order: order,
+      type: 'order'
+    }
+  }));
+
+  const calendarEvents = [...scheduleEvents, ...orderEvents];
 
   if (!isAuthenticated) {
     return (
@@ -465,9 +526,21 @@ export default function SchedulePage() {
                   {/* Show existing schedule info if there is one */}
                   {selectedSchedule && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                      <h4 className="font-medium text-blue-900 mb-1">Existing Event:</h4>
+                      <h4 className="font-medium text-blue-900 mb-1">📅 Existing Event:</h4>
                       <p className="text-blue-800">{selectedSchedule.title}</p>
                       <p className="text-blue-600 text-sm">{selectedSchedule.time}</p>
+                    </div>
+                  )}
+
+                  {/* Show existing order info if there is one */}
+                  {selectedOrder && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                      <h4 className="font-medium text-green-900 mb-1">🍽️ Existing Order:</h4>
+                      <p className="text-green-800">Order #{selectedOrder.orderNumber}</p>
+                      <p className="text-green-600 text-sm">
+                        ${selectedOrder.totalAmount.toFixed(2)} - {orderService.formatStatus(selectedOrder.status)}
+                      </p>
+                      <p className="text-green-600 text-sm">Delivery: {selectedOrder.deliveryTime}</p>
                     </div>
                   )}
 
@@ -498,7 +571,18 @@ export default function SchedulePage() {
                         className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-3"
                       >
                         <Trash2 size={20} />
-                        <span>Delete "{selectedSchedule.title}"</span>
+                        <span>Delete Event "{selectedSchedule.title}"</span>
+                      </button>
+                    )}
+
+                    {/* Delete Order Button - Only show if there's an existing order */}
+                    {selectedOrder && (
+                      <button
+                        onClick={handleDeleteOrderFromDate}
+                        className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition flex items-center justify-center gap-3"
+                      >
+                        <Trash2 size={20} />
+                        <span>Cancel Order #{selectedOrder.orderNumber}</span>
                       </button>
                     )}
 
