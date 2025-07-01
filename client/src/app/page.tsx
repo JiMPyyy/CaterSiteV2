@@ -29,15 +29,13 @@ export default function Home() {
 
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <span className="text-gray-600">Welcome, {user?.username}!</span>
                 <Link href="/profile" className="transition hover:text-primary">
                   Profile
                 </Link>
                 <button
                   onClick={logout}
-                  className="flex items-center gap-2 transition hover:text-primary cursor-pointer"
+                  className="transition hover:text-primary cursor-pointer"
                 >
-                  <LogOut size={16} />
                   <span>Logout</span>
                 </button>
               </div>

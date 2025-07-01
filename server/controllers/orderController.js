@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const { sendOrderNotification } = require('../services/emailService');
 
 // @desc    Get all orders for the authenticated user
 // @route   GET /api/orders
@@ -102,9 +103,17 @@ const createOrder = async (req, res, next) => {
     };
 
     const order = await Order.create(orderData);
-    
+
     // Populate user data
     await order.populate('userId', 'username email');
+
+    // Send email notification
+    try {
+      await sendOrderNotification(order, req.user);
+    } catch (emailError) {
+      console.error('Email notification failed:', emailError);
+      // Don't fail the order creation if email fails
+    }
 
     res.status(201).json({
       success: true,

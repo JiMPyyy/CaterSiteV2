@@ -10,13 +10,13 @@ export default function Navigation() {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
-    return pathname === path ? 'text-blue-600 font-medium' : 'transition hover:text-blue-600';
+    return pathname === path ? 'text-gray-900 font-medium' : 'transition hover:text-primary';
   };
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-200">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="text-2xl font-extrabold tracking-tight text-blue-600">
+        <Link href="/" className="text-2xl font-extrabold tracking-tight text-primary">
           CaterVegas
         </Link>
 
@@ -30,16 +30,14 @@ export default function Navigation() {
           
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">Welcome, {user?.username}!</span>
               <Link href="/profile" className={`flex items-center gap-1 ${isActive('/profile')}`}>
                 <User size={16} />
                 Profile
               </Link>
-              <button 
+              <button
                 onClick={logout}
-                className="flex items-center gap-2 transition hover:text-blue-600 cursor-pointer"
+                className="transition hover:text-primary cursor-pointer"
               >
-                <LogOut size={16} />
                 <span>Logout</span>
               </button>
             </div>

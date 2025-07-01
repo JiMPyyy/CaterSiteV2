@@ -22,11 +22,6 @@ export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // Set document title
-  useEffect(() => {
-    document.title = 'Order Calendar - CaterVegas';
-  }, []);
-
   // Fetch orders on component mount
   useEffect(() => {
     if (isAuthenticated) {
@@ -159,6 +154,23 @@ export default function SchedulePage() {
             </div>
           ) : (
             <div className="bg-card rounded-lg shadow-lg border border-border p-6">
+              <style jsx global>{`
+                .fc-daygrid-day:hover {
+                  background-color: #f3f4f6 !important;
+                  cursor: pointer !important;
+                  transition: background-color 0.2s ease !important;
+                }
+                .fc-daygrid-day-top:hover {
+                  color: #1f2937 !important;
+                  font-weight: 500 !important;
+                }
+                .fc-day-today:hover {
+                  background-color: #e5e7eb !important;
+                }
+                .fc-daygrid-day {
+                  transition: background-color 0.2s ease;
+                }
+              `}</style>
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -202,7 +214,7 @@ export default function SchedulePage() {
                   className="bg-card rounded-lg shadow-xl border border-border p-6 w-full max-w-md mx-4"
                 >
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-semibold text-card-foreground">
+                    <h3 className="text-xl font-semibold text-gray-900">
                       {selectedDate && new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
                         weekday: 'long',
                         year: 'numeric',
@@ -212,7 +224,7 @@ export default function SchedulePage() {
                     </h3>
                     <button
                       onClick={() => setShowActionModal(false)}
-                      className="text-muted-foreground hover:text-foreground"
+                      className="text-gray-600 hover:text-gray-900"
                     >
                       <X size={24} />
                     </button>
@@ -221,13 +233,13 @@ export default function SchedulePage() {
                   <div className="space-y-4">
                     {/* Show existing order info if there is one */}
                     {selectedOrder && (
-                      <div className="bg-accent border border-border rounded-lg p-4 mb-4">
-                        <h4 className="font-medium text-accent-foreground mb-1">🍽️ Existing Order:</h4>
-                        <p className="text-accent-foreground">Order #{selectedOrder.orderNumber}</p>
-                        <p className="text-muted-foreground text-sm">
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                        <h4 className="font-medium text-gray-900 mb-1">🍽️ Existing Order:</h4>
+                        <p className="text-gray-900">Order #{selectedOrder.orderNumber}</p>
+                        <p className="text-gray-600 text-sm">
                           ${selectedOrder.totalAmount.toFixed(2)} - {orderService.formatStatus(selectedOrder.status)}
                         </p>
-                        <p className="text-muted-foreground text-sm">Delivery: {selectedOrder.deliveryTime}</p>
+                        <p className="text-gray-600 text-sm">Delivery: {selectedOrder.deliveryTime}</p>
                       </div>
                     )}
 
@@ -256,7 +268,7 @@ export default function SchedulePage() {
                       {/* Cancel Button */}
                       <button
                         onClick={() => setShowActionModal(false)}
-                        className="w-full bg-muted text-muted-foreground py-3 px-4 rounded-lg hover:bg-muted/80 transition"
+                        className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition"
                       >
                         Cancel
                       </button>
@@ -277,4 +289,4 @@ export default function SchedulePage() {
       </footer>
     </div>
   );
-
+}

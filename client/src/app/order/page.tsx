@@ -7,99 +7,186 @@ import { useAuth } from '@/contexts/AuthContext';
 import { orderService, OrderItem, CreateOrderData } from '@/lib/services/orders';
 import Navigation from '@/components/layout/Navigation';
 
-// Sample menu data (in a real app, this would come from an API)
-const menuItems = [
-  {
-    id: '1',
-    name: 'Caesar Salad',
-    description: 'Fresh romaine lettuce with caesar dressing, parmesan cheese, and croutons',
-    price: 12.99,
-    category: 'main' as const,
-    dietaryInfo: ['vegetarian'],
-    image: '/menu/caesar-salad.jpg'
+// Restaurant menu data
+const restaurantMenus = {
+  "capriottis": {
+    name: "Capriotti's Sandwich Shop",
+    items: [
+      {
+        id: 'cap1',
+        name: 'The Bobbie',
+        description: 'Turkey, cranberry sauce, stuffing, and mayo on a fresh roll',
+        price: 12.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/bobbie.jpg'
+      },
+      {
+        id: 'cap2',
+        name: 'Italian Sub',
+        description: 'Ham, salami, capicola, provolone, lettuce, tomato, onion, oil & vinegar',
+        price: 11.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/italian-sub.jpg'
+      },
+      {
+        id: 'cap3',
+        name: 'Cheese Steak',
+        description: 'Grilled steak with melted cheese, onions, and peppers',
+        price: 13.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/cheese-steak.jpg'
+      },
+      {
+        id: 'cap4',
+        name: 'Veggie Sub',
+        description: 'Fresh vegetables, cheese, lettuce, tomato, and Italian dressing',
+        price: 9.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/veggie-sub.jpg'
+      },
+      {
+        id: 'cap5',
+        name: 'Chocolate Chip Cookie',
+        description: 'Fresh baked chocolate chip cookie',
+        price: 2.99,
+        category: 'dessert' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/cookie.jpg'
+      },
+      {
+        id: 'cap6',
+        name: 'Fountain Drink',
+        description: 'Choice of Coke, Pepsi, Sprite, or other sodas',
+        price: 2.49,
+        category: 'beverage' as const,
+        dietaryInfo: ['vegetarian', 'vegan'],
+        image: '/menu/soda.jpg'
+      }
+    ]
   },
-  {
-    id: '2',
-    name: 'Grilled Chicken Sandwich',
-    description: 'Grilled chicken breast with avocado, lettuce, tomato on artisan bread',
-    price: 15.99,
-    category: 'main' as const,
-    dietaryInfo: [],
-    image: '/menu/chicken-sandwich.jpg'
+  "sushi": {
+    name: "Sushi on Demand",
+    items: [
+      {
+        id: 'sushi1',
+        name: 'California Roll',
+        description: 'Crab, avocado, cucumber with sesame seeds',
+        price: 8.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/california-roll.jpg'
+      },
+      {
+        id: 'sushi2',
+        name: 'Salmon Nigiri (2 pieces)',
+        description: 'Fresh salmon over seasoned sushi rice',
+        price: 6.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/salmon-nigiri.jpg'
+      },
+      {
+        id: 'sushi3',
+        name: 'Spicy Tuna Roll',
+        description: 'Spicy tuna with cucumber and spicy mayo',
+        price: 9.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/spicy-tuna.jpg'
+      },
+      {
+        id: 'sushi4',
+        name: 'Vegetable Roll',
+        description: 'Cucumber, avocado, carrot, and lettuce',
+        price: 7.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian', 'vegan'],
+        image: '/menu/veggie-roll.jpg'
+      },
+      {
+        id: 'sushi5',
+        name: 'Mochi Ice Cream',
+        description: 'Sweet rice cake filled with ice cream (3 pieces)',
+        price: 5.99,
+        category: 'dessert' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/mochi.jpg'
+      },
+      {
+        id: 'sushi6',
+        name: 'Green Tea',
+        description: 'Hot or iced traditional Japanese green tea',
+        price: 2.99,
+        category: 'beverage' as const,
+        dietaryInfo: ['vegetarian', 'vegan'],
+        image: '/menu/green-tea.jpg'
+      }
+    ]
   },
-  {
-    id: '3',
-    name: 'Vegetarian Wrap',
-    description: 'Hummus, roasted vegetables, spinach, and feta cheese in a whole wheat wrap',
-    price: 11.99,
-    category: 'main' as const,
-    dietaryInfo: ['vegetarian'],
-    image: '/menu/veggie-wrap.jpg'
-  },
-  {
-    id: '4',
-    name: 'BBQ Pulled Pork',
-    description: 'Slow-cooked pulled pork with BBQ sauce, coleslaw, and pickles',
-    price: 16.99,
-    category: 'main' as const,
-    dietaryInfo: [],
-    image: '/menu/bbq-pork.jpg'
-  },
-  {
-    id: '5',
-    name: 'Quinoa Power Bowl',
-    description: 'Quinoa with roasted vegetables, chickpeas, and tahini dressing',
-    price: 13.99,
-    category: 'main' as const,
-    dietaryInfo: ['vegetarian', 'vegan', 'gluten-free'],
-    image: '/menu/quinoa-bowl.jpg'
-  },
-  {
-    id: '6',
-    name: 'Fish Tacos',
-    description: 'Grilled fish with cabbage slaw, pico de gallo, and lime crema',
-    price: 14.99,
-    category: 'main' as const,
-    dietaryInfo: [],
-    image: '/menu/fish-tacos.jpg'
-  },
-  {
-    id: '7',
-    name: 'Chocolate Brownie',
-    description: 'Rich chocolate brownie with vanilla ice cream',
-    price: 6.99,
-    category: 'dessert' as const,
-    dietaryInfo: ['vegetarian'],
-    image: '/menu/brownie.jpg'
-  },
-  {
-    id: '8',
-    name: 'Fresh Fruit Salad',
-    description: 'Seasonal fresh fruits with honey-lime dressing',
-    price: 5.99,
-    category: 'dessert' as const,
-    dietaryInfo: ['vegetarian', 'vegan', 'gluten-free'],
-    image: '/menu/fruit-salad.jpg'
-  },
-  {
-    id: '9',
-    name: 'Sparkling Water',
-    description: 'Premium sparkling water with natural flavors',
-    price: 2.99,
-    category: 'beverage' as const,
-    dietaryInfo: ['vegetarian', 'vegan', 'gluten-free'],
-    image: '/menu/sparkling-water.jpg'
-  },
-  {
-    id: '10',
-    name: 'Fresh Juice',
-    description: 'Freshly squeezed orange, apple, or cranberry juice',
-    price: 3.99,
-    category: 'beverage' as const,
-    dietaryInfo: ['vegetarian', 'vegan', 'gluten-free'],
-    image: '/menu/fresh-juice.jpg'
+  "pizza": {
+    name: "Pizza Place",
+    items: [
+      {
+        id: 'pizza1',
+        name: 'Margherita Pizza',
+        description: 'Fresh mozzarella, tomato sauce, basil on thin crust',
+        price: 14.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/margherita.jpg'
+      },
+      {
+        id: 'pizza2',
+        name: 'Pepperoni Pizza',
+        description: 'Classic pepperoni with mozzarella cheese and tomato sauce',
+        price: 16.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/pepperoni.jpg'
+      },
+      {
+        id: 'pizza3',
+        name: 'Supreme Pizza',
+        description: 'Pepperoni, sausage, peppers, onions, mushrooms, olives',
+        price: 19.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/supreme.jpg'
+      },
+      {
+        id: 'pizza4',
+        name: 'Caesar Salad',
+        description: 'Romaine lettuce, parmesan, croutons, caesar dressing',
+        price: 8.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/caesar-salad.jpg'
+      },
+      {
+        id: 'pizza5',
+        name: 'Tiramisu',
+        description: 'Classic Italian dessert with coffee and mascarpone',
+        price: 6.99,
+        category: 'dessert' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/tiramisu.jpg'
+      },
+      {
+        id: 'pizza6',
+        name: 'Italian Soda',
+        description: 'Sparkling water with Italian syrup flavors',
+        price: 3.49,
+        category: 'beverage' as const,
+        dietaryInfo: ['vegetarian', 'vegan'],
+        image: '/menu/italian-soda.jpg'
+      }
+    ]
   }
-];
+};
 
 interface CartItem extends OrderItem {
   id: string;
@@ -110,6 +197,9 @@ export default function OrderPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [selectedRestaurant, setSelectedRestaurant] = useState<keyof typeof restaurantMenus>('capriottis');
   const [deliveryInfo, setDeliveryInfo] = useState({
     date: '',
     time: '',
@@ -122,8 +212,11 @@ export default function OrderPage() {
     specialInstructions: ''
   });
 
+  // Get current menu items based on selected restaurant
+  const currentMenu = restaurantMenus[selectedRestaurant].items;
+
   // Add item to cart
-  const addToCart = (menuItem: typeof menuItems[0]) => {
+  const addToCart = (menuItem: typeof currentMenu[0]) => {
     const existingItem = cart.find(item => item.id === menuItem.id);
 
     if (existingItem) {
@@ -168,12 +261,26 @@ export default function OrderPage() {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      alert('Please log in to place an order');
+      setErrorMessage('Please log in to place an order');
+      setShowErrorModal(true);
       return;
     }
 
     if (cart.length === 0) {
-      alert('Please add items to your cart');
+      setErrorMessage('Please add items to your cart');
+      setShowErrorModal(true);
+      return;
+    }
+
+    // Check if delivery time is within 12 hours
+    const deliveryDateTime = new Date(`${deliveryInfo.date}T${deliveryInfo.time}`);
+    const currentTime = new Date();
+    const timeDifference = deliveryDateTime.getTime() - currentTime.getTime();
+    const hoursUntilDelivery = timeDifference / (1000 * 60 * 60); // Convert to hours
+
+    if (hoursUntilDelivery < 12) {
+      setErrorMessage('Orders must be placed at least 12 hours in advance. Please select a delivery time that is at least 12 hours from now to allow proper preparation time.');
+      setShowErrorModal(true);
       return;
     }
 
@@ -198,7 +305,8 @@ export default function OrderPage() {
         specialInstructions: ''
       });
     } catch (error: any) {
-      alert(error.message || 'Failed to place order');
+      setErrorMessage(error.message || 'Failed to place order');
+      setShowErrorModal(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -217,7 +325,7 @@ export default function OrderPage() {
           <p className="text-gray-600 mb-6">Thank you for your order. We'll prepare it with care and deliver it on time.</p>
           <button
             onClick={() => setOrderSuccess(false)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
           >
             Place Another Order
           </button>
@@ -232,16 +340,37 @@ export default function OrderPage() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Order Food</h1>
 
+        {/* Restaurant Selection Dropdown */}
+        <div className="mb-8">
+          <label className="block text-lg font-medium text-gray-900 mb-3">
+            Choose Restaurant:
+          </label>
+          <select
+            value={selectedRestaurant}
+            onChange={(e) => {
+              setSelectedRestaurant(e.target.value as keyof typeof restaurantMenus);
+              setCart([]); // Clear cart when switching restaurants
+            }}
+            className="w-full max-w-md border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-lg"
+          >
+            <option value="capriottis">Capriotti's Sandwich Shop</option>
+            <option value="sushi">Sushi on Demand</option>
+            <option value="pizza">Pizza Place</option>
+          </select>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Menu Items */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Menu</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+              {restaurantMenus[selectedRestaurant].name} Menu
+            </h2>
 
             {/* Main Dishes */}
             <div className="mb-8">
-              <h3 className="text-xl font-medium text-gray-800 mb-4">Main Dishes</h3>
+              <h3 className="text-xl font-medium text-gray-800 mb-4">Main Items</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {menuItems.filter(item => item.category === 'main').map((item) => (
+                {currentMenu.filter(item => item.category === 'main').map((item) => (
                   <motion.div
                     key={item.id}
                     whileHover={{ scale: 1.02 }}
@@ -249,7 +378,7 @@ export default function OrderPage() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                      <span className="text-lg font-bold text-blue-600">${item.price}</span>
+                      <span className="text-lg font-bold text-gray-900">${item.price}</span>
                     </div>
                     <p className="text-gray-600 text-sm mb-3">{item.description}</p>
 
@@ -288,7 +417,7 @@ export default function OrderPage() {
                         ) : (
                           <button
                             onClick={() => addToCart(item)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition flex items-center gap-2"
                           >
                             <Plus size={16} />
                             Add to Cart
@@ -302,10 +431,11 @@ export default function OrderPage() {
             </div>
 
             {/* Desserts */}
-            <div className="mb-8">
-              <h3 className="text-xl font-medium text-gray-800 mb-4">Desserts</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {menuItems.filter(item => item.category === 'dessert').map((item) => (
+            {currentMenu.filter(item => item.category === 'dessert').length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-medium text-gray-800 mb-4">Desserts</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentMenu.filter(item => item.category === 'dessert').map((item) => (
                   <motion.div
                     key={item.id}
                     whileHover={{ scale: 1.02 }}
@@ -313,7 +443,7 @@ export default function OrderPage() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                      <span className="text-lg font-bold text-blue-600">${item.price}</span>
+                      <span className="text-lg font-bold text-gray-900">${item.price}</span>
                     </div>
                     <p className="text-gray-600 text-sm mb-3">{item.description}</p>
 
@@ -352,7 +482,7 @@ export default function OrderPage() {
                         ) : (
                           <button
                             onClick={() => addToCart(item)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition flex items-center gap-2"
                           >
                             <Plus size={16} />
                             Add to Cart
@@ -361,15 +491,17 @@ export default function OrderPage() {
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Beverages */}
-            <div className="mb-8">
-              <h3 className="text-xl font-medium text-gray-800 mb-4">Beverages</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {menuItems.filter(item => item.category === 'beverage').map((item) => (
+            {currentMenu.filter(item => item.category === 'beverage').length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-medium text-gray-800 mb-4">Beverages</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentMenu.filter(item => item.category === 'beverage').map((item) => (
                   <motion.div
                     key={item.id}
                     whileHover={{ scale: 1.02 }}
@@ -377,7 +509,7 @@ export default function OrderPage() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                      <span className="text-lg font-bold text-blue-600">${item.price}</span>
+                      <span className="text-lg font-bold text-gray-900">${item.price}</span>
                     </div>
                     <p className="text-gray-600 text-sm mb-3">{item.description}</p>
 
@@ -416,7 +548,7 @@ export default function OrderPage() {
                         ) : (
                           <button
                             onClick={() => addToCart(item)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition flex items-center gap-2"
                           >
                             <Plus size={16} />
                             Add to Cart
@@ -425,9 +557,10 @@ export default function OrderPage() {
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Cart and Checkout */}
@@ -459,7 +592,7 @@ export default function OrderPage() {
                           </button>
                           <span className="font-medium w-8 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => addToCart(menuItems.find(mi => mi.id === item.id)!)}
+                            onClick={() => addToCart(currentMenu.find(mi => mi.id === item.id)!)}
                             className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition"
                           >
                             <Plus size={14} />
@@ -574,7 +707,7 @@ export default function OrderPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting || !isAuthenticated}
-                      className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                      className="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
                       {isSubmitting ? 'Placing Order...' : !isAuthenticated ? 'Please Log In' : 'Place Order'}
                     </button>
@@ -591,6 +724,33 @@ export default function OrderPage() {
           </div>
         </div>
       </div>
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl border border-gray-200 p-6 w-full max-w-md mx-4"
+          >
+            <div className="flex items-center justify-center mb-4">
+              <div className="text-red-600 text-4xl">⚠️</div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-4">
+              Unable to Place Order
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              {errorMessage}
+            </p>
+            <button
+              onClick={() => setShowErrorModal(false)}
+              className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 transition font-medium"
+            >
+              Understood
+            </button>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
