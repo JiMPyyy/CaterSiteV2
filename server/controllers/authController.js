@@ -6,6 +6,14 @@ const { generateToken } = require('../utils/jwt');
 // @access  Public
 const register = async (req, res, next) => {
   try {
+    console.log('Registration attempt received:', {
+      username: req.body.username,
+      email: req.body.email,
+      phone: req.body.phone,
+      hasPassword: !!req.body.password,
+      hasConfirmPassword: !!req.body.confirmPassword
+    });
+
     const { username, email, phone, password } = req.body;
 
     // Check if user already exists

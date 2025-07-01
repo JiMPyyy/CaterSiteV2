@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const { sendOrderNotification } = require('../services/emailService');
+const { confirmPaymentIntent } = require('../services/stripeService');
 
 // @desc    Get all orders for the authenticated user
 // @route   GET /api/orders
@@ -85,12 +86,26 @@ const getOrder = async (req, res, next) => {
 // @access  Private
 const createOrder = async (req, res, next) => {
   try {
-    const { items, deliveryDate, deliveryTime, deliveryAddress, specialInstructions } = req.body;
+    const { items, deliveryDate, deliveryTime, deliveryAddress, specialInstructions, paymentIntentId } = req.body;
 
     // Calculate total amount
     const totalAmount = items.reduce((total, item) => {
       return total + (item.price * item.quantity);
     }, 0);
+
+    // Verify payment if paymentIntentId is provided
+    let paymentStatus = 'pending';
+    if (paymentIntentId) {
+      const paymentResult = await confirmPaymentIntent(paymentIntentId);
+      if (paymentResult.success && paymentResult.status === 'succeeded') {
+        paymentStatus = 'paid';
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Payment verification failed'
+        });
+      }
+    }
 
     const orderData = {
       userId: req.user._id,
@@ -99,7 +114,9 @@ const createOrder = async (req, res, next) => {
       deliveryDate,
       deliveryTime,
       deliveryAddress,
-      specialInstructions
+      specialInstructions,
+      paymentStatus,
+      paymentIntentId: paymentIntentId || null
     };
 
     const order = await Order.create(orderData);

@@ -39,6 +39,7 @@ export interface CreateOrderData {
   deliveryTime: string;
   deliveryAddress: DeliveryAddress;
   specialInstructions?: string;
+  paymentIntentId?: string;
 }
 
 export interface UpdateOrderData extends Partial<CreateOrderData> {

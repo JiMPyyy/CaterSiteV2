@@ -6,6 +6,7 @@ import { Plus, Minus, ShoppingCart, Calendar, MapPin, Clock } from 'lucide-react
 import { useAuth } from '@/contexts/AuthContext';
 import { orderService, OrderItem, CreateOrderData } from '@/lib/services/orders';
 import Navigation from '@/components/layout/Navigation';
+import StripePaymentForm from '@/components/payment/StripePaymentForm';
 
 // Restaurant menu data
 const restaurantMenus = {
@@ -200,6 +201,8 @@ export default function OrderPage() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedRestaurant, setSelectedRestaurant] = useState<keyof typeof restaurantMenus>('capriottis');
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentIntentId, setPaymentIntentId] = useState<string>('');
   const [deliveryInfo, setDeliveryInfo] = useState({
     date: '',
     time: '',
@@ -256,7 +259,58 @@ export default function OrderPage() {
   // Calculate total
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Handle order submission
+  // Handle payment success
+  const handlePaymentSuccess = (paymentId: string) => {
+    console.log('Payment success received:', paymentId);
+    setPaymentIntentId(paymentId);
+    setShowPayment(false);
+    // Now create the order with payment
+    createOrderWithPayment(paymentId);
+  };
+
+  // Handle payment error
+  const handlePaymentError = (error: string) => {
+    console.log('Payment error received:', error);
+    setErrorMessage(`Payment failed: ${error}`);
+    setShowErrorModal(true);
+    setIsSubmitting(false);
+  };
+
+  // Create order with payment
+  const createOrderWithPayment = async (paymentId: string) => {
+    try {
+      console.log('Creating order with payment ID:', paymentId);
+      const orderData: CreateOrderData & { paymentIntentId: string } = {
+        items: cart.map(({ id, ...item }) => item),
+        deliveryDate: deliveryInfo.date,
+        deliveryTime: deliveryInfo.time,
+        deliveryAddress: deliveryInfo.address,
+        specialInstructions: deliveryInfo.specialInstructions,
+        paymentIntentId: paymentId
+      };
+
+      console.log('Order data:', orderData);
+      const result = await orderService.createOrder(orderData);
+      console.log('Order creation result:', result);
+
+      setOrderSuccess(true);
+      setCart([]);
+      setDeliveryInfo({
+        date: '',
+        time: '',
+        address: { street: '', city: 'Las Vegas', state: 'NV', zipCode: '' },
+        specialInstructions: ''
+      });
+    } catch (error: any) {
+      console.error('Order creation error:', error);
+      setErrorMessage(error.message || 'Failed to place order');
+      setShowErrorModal(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle order submission (now shows payment form)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -284,32 +338,10 @@ export default function OrderPage() {
       return;
     }
 
-    setIsSubmitting(true);
+    // Show payment form instead of creating order directly
+    setShowPayment(true);
+    // Don't set isSubmitting here - let the payment form handle its own processing state
 
-    try {
-      const orderData: CreateOrderData = {
-        items: cart.map(({ id, ...item }) => item), // Remove id field
-        deliveryDate: deliveryInfo.date,
-        deliveryTime: deliveryInfo.time,
-        deliveryAddress: deliveryInfo.address,
-        specialInstructions: deliveryInfo.specialInstructions
-      };
-
-      await orderService.createOrder(orderData);
-      setOrderSuccess(true);
-      setCart([]);
-      setDeliveryInfo({
-        date: '',
-        time: '',
-        address: { street: '', city: 'Las Vegas', state: 'NV', zipCode: '' },
-        specialInstructions: ''
-      });
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Failed to place order');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   if (orderSuccess) {
@@ -724,6 +756,40 @@ export default function OrderPage() {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {showPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl border border-gray-200 p-6 w-full max-w-md mx-4"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">
+                Complete Your Payment
+              </h3>
+              <button
+                onClick={() => {
+                  setShowPayment(false);
+                  setIsSubmitting(false);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <StripePaymentForm
+              amount={total}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+              isProcessing={isSubmitting}
+              setIsProcessing={setIsSubmitting}
+            />
+          </motion.div>
+        </div>
+      )}
 
       {/* Error Modal */}
       {showErrorModal && (

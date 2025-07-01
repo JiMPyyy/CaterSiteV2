@@ -45,16 +45,33 @@ export const authService = {
   // Register new user
   register: async (userData: RegisterData): Promise<AuthResponse> => {
     try {
+      console.log('Auth service: Sending registration request to:', `${process.env.NEXT_PUBLIC_API_URL}/auth/register`);
+      console.log('Auth service: Registration data:', {
+        ...userData,
+        password: '[HIDDEN]',
+        confirmPassword: '[HIDDEN]'
+      });
+
       const response = await api.post('/auth/register', userData);
-      
+
+      console.log('Auth service: Registration response:', response.data);
+
       // Store token
       if (response.data.data.token) {
         tokenManager.set(response.data.data.token);
       }
-      
+
       return response.data;
     } catch (error: any) {
-      throw error.response?.data || { message: 'Registration failed' };
+      console.error('Auth service: Registration error:', error);
+      console.error('Auth service: Error response:', error.response?.data);
+
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.errors?.[0] ||
+                          error.message ||
+                          'Registration failed';
+
+      throw { message: errorMessage };
     }
   },
 
@@ -77,6 +94,11 @@ export const authService = {
   // Logout user
   logout: () => {
     tokenManager.remove();
+  },
+
+  // Check if user is authenticated
+  isAuthenticated: (): boolean => {
+    return !!tokenManager.get();
   },
 
   // Get current user profile

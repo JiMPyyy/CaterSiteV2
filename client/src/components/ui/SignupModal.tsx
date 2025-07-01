@@ -18,6 +18,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
     password: '',
     confirmPassword: ''
   });
+  const [localError, setLocalError] = useState<string>('');
 
   // Close on ESC
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
   useEffect(() => {
     if (isOpen) {
       clearError();
+      setLocalError('');
       setFormData({
         username: '',
         email: '',
@@ -44,22 +46,61 @@ export default function SignupModal({ isOpen, onClose }: Props) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear local error when user starts typing
+    if (localError) setLocalError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLocalError('');
 
     // Client-side validation
     if (formData.password !== formData.confirmPassword) {
-      return; // This will be handled by the backend validation
+      setLocalError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setLocalError('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (formData.username.length < 3) {
+      setLocalError('Username must be at least 3 characters long');
+      return;
+    }
+
+    if (!formData.email.includes('@')) {
+      setLocalError('Please enter a valid email address');
+      return;
     }
 
     try {
-      await register(formData);
-      onClose(); // Close modal on successful registration
-    } catch (error) {
-      // Error is handled by the auth context
-      console.error('Registration failed:', error);
+      console.log('SignupModal: Attempting to register with:', {
+        ...formData,
+        password: '[HIDDEN]',
+        confirmPassword: '[HIDDEN]'
+      });
+
+      const result = await register(formData);
+      console.log('SignupModal: Registration result:', result);
+
+      // Only close if registration was successful
+      console.log('SignupModal: Registration successful, closing modal');
+      onClose();
+    } catch (error: any) {
+      console.error('SignupModal: Registration failed with error:', error);
+
+      // Set local error if auth context doesn't have one
+      if (!error.message && typeof error === 'object') {
+        setLocalError('Registration failed. Please try again.');
+      } else if (typeof error === 'string') {
+        setLocalError(error);
+      } else if (error.message) {
+        setLocalError(error.message);
+      } else {
+        setLocalError('Registration failed. Please try again.');
+      }
     }
   };
 
@@ -95,9 +136,9 @@ export default function SignupModal({ isOpen, onClose }: Props) {
             </h2>
 
             {/* Error message */}
-            {error && (
+            {(error || localError) && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-                {error}
+                {localError || error}
               </div>
             )}
 
@@ -183,6 +224,16 @@ export default function SignupModal({ isOpen, onClose }: Props) {
               >
                 {isLoading ? 'Creating Account...' : 'Sign Up'}
               </button>
+
+              {/* Debug info */}
+              <div className="text-xs text-gray-500 mt-2 bg-gray-100 p-2 rounded">
+                <p>Debug: API URL = {process.env.NEXT_PUBLIC_API_URL}</p>
+                <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
+                <p>Username: "{formData.username}" (length: {formData.username.length})</p>
+                <p>Email: "{formData.email}" (length: {formData.email.length})</p>
+                <p>Password: "{formData.password ? '***' : ''}" (length: {formData.password.length})</p>
+                <p>Form valid: {formData.username && formData.email && formData.password ? 'Yes' : 'No'}</p>
+              </div>
             </form>
           </motion.div>
         </motion.div>

@@ -70,12 +70,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
+      console.log('AuthContext: Starting registration...');
       const response = await authService.register(userData);
+      console.log('AuthContext: Registration successful, setting user:', response.data.user);
       setUser(response.data.user);
+      return response;
     } catch (error: any) {
-      setError(error.message || 'Registration failed');
-      throw error;
+      console.error('AuthContext: Registration failed:', error);
+      const errorMessage = error.message || 'Registration failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
