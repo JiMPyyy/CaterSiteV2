@@ -14,59 +14,237 @@ const restaurantMenus = {
   "capriottis": {
     name: "Capriotti's Sandwich Shop",
     items: [
+      // Party Trays (Main Catering Items)
       {
         id: 'cap1',
-        name: 'The Bobbie',
-        description: 'Turkey, cranberry sauce, stuffing, and mayo on a fresh roll',
-        price: 12.99,
+        name: 'The Bobbie® Party Tray',
+        description: 'A tray loaded with the greatest sandwich in America. Homemade turkey, cranberry sauce, stuffing and mayo. (Feeds 8-10 people)',
+        price: 89.99,
         category: 'main' as const,
         dietaryInfo: [],
         image: 'https://www.reviewjournal.com/wp-content/uploads/2017/11/9548937_web1_capriotti-s_bobbie.jpeg'
       },
       {
         id: 'cap2',
-        name: 'Italian Sub',
-        description: 'Ham, salami, capicola, provolone, lettuce, tomato, onion, oil & vinegar',
-        price: 11.99,
+        name: 'Delaware\'s Finest Party Tray',
+        description: 'An assortment of our Cap\'s classics: The Bobbie®, Slaw Be Jo®, and the Italian sub (served with pickles, hot and sweet peppers). (Feeds 8-10 people)',
+        price: 94.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/italian-sub.jpg'
+        image: '/menu/delawares-finest.jpg'
       },
       {
         id: 'cap3',
-        name: 'Cheese Steak',
-        description: 'Grilled steak with melted cheese, onions, and peppers',
-        price: 13.99,
+        name: 'Little Italy Party Tray',
+        description: 'Paying homage to our heritage, this tray is loaded with nothing but tasty Italian subs (served with a side of pickles, hot and sweet peppers). (Feeds 8-10 people)',
+        price: 87.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/cheese-steak.jpg'
+        image: '/menu/little-italy.jpg'
       },
       {
         id: 'cap4',
-        name: 'Veggie Sub',
-        description: 'Fresh vegetables, cheese, lettuce, tomato, and Italian dressing',
-        price: 9.99,
+        name: 'American Wagyu Party Tray',
+        description: 'A tray of our finest American Wagyu beef subs: The American Wagyu Slaw Be Jo® and the American Wagyu Roast Beef. (Feeds 8-10 people)',
+        price: 109.99,
         category: 'main' as const,
-        dietaryInfo: ['vegetarian'],
-        image: '/menu/veggie-sub.jpg'
+        dietaryInfo: [],
+        image: '/menu/wagyu-tray.jpg'
       },
       {
         id: 'cap5',
-        name: 'Chocolate Chip Cookie',
-        description: 'Fresh baked chocolate chip cookie',
-        price: 2.99,
-        category: 'dessert' as const,
-        dietaryInfo: ['vegetarian'],
-        image: '/menu/cookie.jpg'
+        name: 'The Turkey Lover Party Tray',
+        description: 'Assortment of our delicious oven-roasted turkey subs: The Bobbie®, Cole Turkey®, and the Homemade Turkey sub (served with a side of mayo, mustard, pickles and peppers). (Feeds 8-10 people)',
+        price: 92.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/turkey-lovers.jpg'
       },
       {
         id: 'cap6',
-        name: 'Fountain Drink',
-        description: 'Choice of Coke, Pepsi, Sprite, or other sodas',
-        price: 2.49,
-        category: 'beverage' as const,
+        name: 'The Vegetarian Party Tray',
+        description: 'Assortment of our delicious vegetarian subs made with meatless products and veggies: Veggie Turkey, Veggie Cole Turkey®, and Cheese sub. (Feeds 8-10 people)',
+        price: 79.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/vegetarian-tray.jpg'
+      },
+      {
+        id: 'cap7',
+        name: 'Create Your Own Party Tray',
+        description: 'Create your own party tray by choosing a combination of any of our cold subs: The Bobbie®, Cole Turkey®, American Wagyu Slaw Be Jo®, Italian, Homemade Turkey, Homemade Roast Beef, Tuna, Veggie Turkey, and Veggie Cole Turkey®. (Feeds 8-10 people)',
+        price: 89.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/custom-tray.jpg'
+      },
+
+      // Box Lunches
+      {
+        id: 'cap8',
+        name: 'The Bobbie® Boxed Lunch',
+        description: 'The nationally acclaimed best-seller! Homemade turkey, cranberry sauce, stuffing, and mayo. Includes small (8") sandwich, chips, and cookie.',
+        price: 14.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: 'https://www.reviewjournal.com/wp-content/uploads/2017/11/9548937_web1_capriotti-s_bobbie.jpeg'
+      },
+      {
+        id: 'cap9',
+        name: 'Cole Turkey® Boxed Lunch',
+        description: 'Slow-roasted, homemade turkey, provolone cheese, Russian dressing, cole slaw, and mayo. Includes small (8") sandwich, chips, and cookie.',
+        price: 14.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/cole-turkey-box.jpg'
+      },
+      {
+        id: 'cap10',
+        name: 'American Wagyu Slaw Be Jo® Boxed Lunch',
+        description: 'Slow-cooked wagyu roast beef, provolone cheese, Russian dressing, cole slaw, and mayo. Includes small (8") sandwich, chips, and cookie.',
+        price: 17.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/slaw-be-jo-box.jpg'
+      },
+      {
+        id: 'cap11',
+        name: 'Italian Sub Boxed Lunch',
+        description: 'A flavorful combination of premium Italian deli meats made with Genoa salami, capocollo, and prosciuttini. Includes small (8") sandwich, chips, and cookie.',
+        price: 15.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/italian-box.jpg'
+      },
+      {
+        id: 'cap12',
+        name: 'American Wagyu Roast Beef Boxed Lunch',
+        description: 'Ultra-premium American Wagyu beef slow-roasted, piled high then topped with provolone cheese, lettuce, tomato, onions, and mayo. Includes small (8") sandwich, chips, and cookie.',
+        price: 17.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/wagyu-roast-beef-box.jpg'
+      },
+      {
+        id: 'cap13',
+        name: 'Homemade Turkey Boxed Lunch',
+        description: 'Our famous all natural, roasted, and hand pulled recipe. Includes small (8") sandwich, chips, and cookie.',
+        price: 13.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/homemade-turkey-box.jpg'
+      },
+      {
+        id: 'cap14',
+        name: 'Homemade Tuna Boxed Lunch',
+        description: 'Our homemade recipe, made fresh daily. Includes small (8") sandwich, chips, and cookie.',
+        price: 13.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/tuna-box.jpg'
+      },
+      {
+        id: 'cap15',
+        name: 'Veggie Turkey Boxed Lunch',
+        description: 'Veggie turkey, provolone cheese, lettuce, tomato, and onion. Includes small (8") sandwich, chips, and cookie.',
+        price: 12.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/veggie-turkey-box.jpg'
+      },
+      {
+        id: 'cap16',
+        name: 'Veggie Cole Turkey® Boxed Lunch',
+        description: 'Veggie turkey, provolone cheese, Russian dressing, cole slaw, and mayo. Includes small (8") sandwich, chips, and cookie.',
+        price: 12.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/veggie-cole-turkey-box.jpg'
+      },
+
+      // Shareable Salads
+      {
+        id: 'cap17',
+        name: 'Balsamic Chicken Catering Salad',
+        description: 'Grilled chicken breast, mixed greens, gorgonzola cheese crumbles, glazed cranberry walnuts, and balsamic dressing (Feeds 6-8 People)',
+        price: 49.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/balsamic-chicken-salad.jpg'
+      },
+      {
+        id: 'cap18',
+        name: 'BBQ Turkey or Chicken Catering Salad',
+        description: 'Homemade turkey or grilled chicken breast, mixed greens, crispy fried onions, diced tomatoes, corn & black bean mix, chipotle ranch dressing, and BBQ sauce (Feeds 6-8 People)',
+        price: 47.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/bbq-chicken-salad.jpg'
+      },
+      {
+        id: 'cap19',
+        name: 'American Wagyu & Bleu® Catering Salad',
+        description: 'American Wagyu roast beef, mixed greens, gorgonzola cheese crumbles, sweet peppers, crispy fried onions, diced tomatoes, and gorgonzola vinaigrette (Feeds 6-8 People)',
+        price: 54.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/wagyu-bleu-salad.jpg'
+      },
+      {
+        id: 'cap20',
+        name: 'Cap\'s Chopped Catering Salad',
+        description: 'Fresh chopped iceberg lettuce, diced tomatoes, provolone cheese, salami, capocollo, pepper ham, black olives, and red wine vinaigrette. (Feeds 6-8 People)',
+        price: 44.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/caps-chopped-salad.jpg'
+      },
+      {
+        id: 'cap21',
+        name: 'Cap\'s Creation Catering Salad',
+        description: 'Garden salad with mixed greens and your choice of toppings: black olives, onions, mushrooms, glazed cranberry walnuts, crispy fried onions, diced tomatoes, sweet or hot peppers, corn & black bean mix. (Feeds 6-8 People)',
+        price: 39.99,
+        category: 'main' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/caps-creation-salad.jpg'
+      },
+
+      // Desserts & Sides
+      {
+        id: 'cap22',
+        name: 'Cookie Tray',
+        description: 'The perfect end to your party. Or the beginning. Heck, eat a cookie whenever you want, they\'re delicious! Comes with 12 cookies.',
+        price: 19.99,
+        category: 'dessert' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/cookie-tray.jpg'
+      },
+      {
+        id: 'cap23',
+        name: 'Cookie & Brookie Tray',
+        description: 'An assortment of extraordinary cookies and brookies. Perfect for any gathering.',
+        price: 24.99,
+        category: 'dessert' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/brookie-tray.jpg'
+      },
+      {
+        id: 'cap24',
+        name: 'Catering Sides',
+        description: 'Make any meal complete! Choose from our homemade coleslaw, cranberry, or stuffing. (Feeds 8-10 people)',
+        price: 12.99,
+        category: 'dessert' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/catering-sides.jpg'
+      },
+      {
+        id: 'cap25',
+        name: 'Catering Chips',
+        description: 'Don\'t forget the chips! Assorted varieties available. Perfect for any catering order.',
+        price: 8.99,
+        category: 'dessert' as const,
         dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/soda.jpg'
+        image: '/menu/catering-chips.jpg'
       }
     ]
   },
