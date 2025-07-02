@@ -81,7 +81,22 @@ const orderSchema = new mongoose.Schema({
     zipCode: {
       type: String,
       required: [true, 'Zip code is required'],
-      match: [/^\d{5}(-\d{4})?$/, 'Please enter a valid zip code']
+      trim: true,
+      validate: {
+        validator: function(v) {
+          // US ZIP codes: 12345 or 12345-6789
+          const usZip = /^[0-9]{5}(-[0-9]{4})?$/;
+          // Canadian postal codes: A1A 1A1 or A1A1A1
+          const canadianPostal = /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/;
+          // UK postal codes: basic pattern
+          const ukPostal = /^[A-Za-z]{1,2}\d[A-Za-z\d]? ?\d[A-Za-z]{2}$/;
+          // Simple fallback for other formats (at least 3 characters)
+          const basicPattern = /^.{3,}$/;
+
+          return usZip.test(v) || canadianPostal.test(v) || ukPostal.test(v) || basicPattern.test(v);
+        },
+        message: 'Please enter a valid zip/postal code'
+      }
     }
   },
   specialInstructions: {
@@ -91,8 +106,45 @@ const orderSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid', 'failed', 'refunded'],
+    enum: ['pending', 'succeeded', 'failed', 'refunded'],
     default: 'pending'
+  },
+  paymentIntentId: {
+    type: String,
+    trim: true
+  },
+  // Cancellation fields
+  cancelledAt: {
+    type: Date
+  },
+  cancellationReason: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Cancellation reason cannot exceed 500 characters']
+  },
+  cancelledBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  // Refund fields
+  refundId: {
+    type: String,
+    trim: true
+  },
+  refundAmount: {
+    type: Number,
+    min: [0, 'Refund amount cannot be negative']
+  },
+  refundStatus: {
+    type: String,
+    enum: ['pending', 'succeeded', 'failed', 'cancelled'],
+    trim: true
+  },
+  // Admin notes
+  adminNotes: {
+    type: String,
+    trim: true,
+    maxlength: [1000, 'Admin notes cannot exceed 1000 characters']
   }
 }, {
   timestamps: true

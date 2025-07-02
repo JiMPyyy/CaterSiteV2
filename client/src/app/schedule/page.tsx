@@ -75,7 +75,8 @@ export default function SchedulePage() {
   // Handle creating a new order
   const handleCreateOrder = () => {
     setShowActionModal(false);
-    router.push('/order');
+    // Pass the selected date as a URL parameter
+    router.push(`/order?date=${selectedDate}`);
   };
 
   // Handle deleting an order
@@ -140,7 +141,11 @@ export default function SchedulePage() {
               <p className="text-muted-foreground">View and manage your catering orders</p>
             </div>
             <button
-              onClick={() => router.push('/order')}
+              onClick={() => {
+                // Pre-fill with today's date when creating a new order from header
+                const today = new Date().toISOString().split('T')[0];
+                router.push(`/order?date=${today}`);
+              }}
               className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition flex items-center gap-2"
             >
               <Plus size={20} />

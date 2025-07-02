@@ -14,6 +14,8 @@ interface AuthContextType {
   updateProfile: (userData: Partial<Pick<User, 'username' | 'email' | 'phone'>>) => Promise<void>;
   error: string | null;
   clearError: () => void;
+  showWelcome: boolean;
+  clearWelcome: () => void;
 }
 
 // Create context
@@ -28,6 +30,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   // Check if user is authenticated on mount
   useEffect(() => {
@@ -54,9 +57,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await authService.login(credentials);
       setUser(response.data.user);
+      // Show welcome popup for successful login
+      setShowWelcome(true);
     } catch (error: any) {
       setError(error.message || 'Login failed');
       throw error;
@@ -75,6 +80,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authService.register(userData);
       console.log('AuthContext: Registration successful, setting user:', response.data.user);
       setUser(response.data.user);
+      // Show welcome popup for successful registration
+      setShowWelcome(true);
       return response;
     } catch (error: any) {
       console.error('AuthContext: Registration failed:', error);
@@ -111,6 +118,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
   };
 
+  // Clear welcome function
+  const clearWelcome = () => {
+    setShowWelcome(false);
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
@@ -120,7 +132,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     updateProfile,
     error,
-    clearError
+    clearError,
+    showWelcome,
+    clearWelcome
   };
 
   return (

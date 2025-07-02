@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navigation() {
@@ -30,6 +30,12 @@ export default function Navigation() {
           
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
+              {user?.role === 'admin' && (
+                <Link href="/admin" className={`flex items-center gap-1 ${isActive('/admin')} text-purple-600 hover:text-purple-800`}>
+                  <Shield size={16} />
+                  Admin
+                </Link>
+              )}
               <Link href="/profile" className={`flex items-center gap-1 ${isActive('/profile')}`}>
                 <User size={16} />
                 Profile

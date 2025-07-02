@@ -98,7 +98,7 @@ const createOrder = async (req, res, next) => {
     if (paymentIntentId) {
       const paymentResult = await confirmPaymentIntent(paymentIntentId);
       if (paymentResult.success && paymentResult.status === 'succeeded') {
-        paymentStatus = 'paid';
+        paymentStatus = 'succeeded';
       } else {
         return res.status(400).json({
           success: false,

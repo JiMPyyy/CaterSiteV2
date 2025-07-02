@@ -20,13 +20,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
   });
   const [localError, setLocalError] = useState<string>('');
 
-  // Close on ESC
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [isOpen, onClose]);
+  // Removed ESC key handler to prevent accidental closing
 
   // Clear error when modal opens
   useEffect(() => {
@@ -52,6 +46,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent any event bubbling
     setLocalError('');
 
     // Client-side validation
@@ -113,7 +108,12 @@ export default function SignupModal({ isOpen, onClose }: Props) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-          onClick={onClose}
+          onClick={(e) => {
+            // Only close if clicking directly on the backdrop (not bubbled from child)
+            if (e.target === e.currentTarget && !isLoading) {
+              onClose();
+            }
+          }}
         >
           <motion.div
             initial={{ y: 20, opacity: 0, scale: 0.96 }}
@@ -124,8 +124,19 @@ export default function SignupModal({ isOpen, onClose }: Props) {
             className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
           >
             <button
-              onClick={onClose}
-              className="absolute top-3 right-4 text-2xl font-bold text-gray-400 hover:text-gray-700"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isLoading) {
+                  onClose();
+                }
+              }}
+              disabled={isLoading}
+              className={`absolute top-3 right-4 text-2xl font-bold ${
+                isLoading
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : 'text-gray-400 hover:text-gray-700'
+              }`}
               aria-label="Close"
             >
               &times;
@@ -142,7 +153,11 @@ export default function SignupModal({ isOpen, onClose }: Props) {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              onClick={(e) => e.stopPropagation()}
+              className="space-y-5"
+            >
               {/* username */}
               <label className="block">
                 <span className="text-sm font-medium text-gray-700">Username</span>
