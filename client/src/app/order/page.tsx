@@ -9,6 +9,133 @@ import { orderService, OrderItem, CreateOrderData } from '@/lib/services/orders'
 import Navigation from '@/components/layout/Navigation';
 import StripePaymentForm from '@/components/payment/StripePaymentForm';
 
+type MenuItem = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: 'main' | 'dessert' | 'beverage';
+  dietaryInfo: string[];
+  image: string;
+  isPlatter?: boolean;
+  maxItems?: number;
+};
+
+type PlatterItem = {
+  id: string;
+  name: string;
+  price: number;
+  type: 'roll' | 'nigiri' | 'sashimi';
+};
+
+// Sushi platter selection items (from Sushi on Demand menu)
+const sushiPlatterItems: PlatterItem[] = [
+  // Rolls
+  { id: 'roll1', name: '007 Roll', price: 10.35, type: 'roll' },
+  { id: 'roll2', name: 'Alaskan Roll', price: 8.06, type: 'roll' },
+  { id: 'roll3', name: 'Avokyu Roll', price: 4.28, type: 'roll' },
+  { id: 'roll4', name: 'Baked Scallops Roll', price: 12.56, type: 'roll' },
+  { id: 'roll5', name: 'Batman Burrito', price: 12.56, type: 'roll' },
+  { id: 'roll6', name: 'Blackjack Roll', price: 12.60, type: 'roll' },
+  { id: 'roll7', name: 'Boss Coskey Roll', price: 9.90, type: 'roll' },
+  { id: 'roll8', name: 'California Roll', price: 7.20, type: 'roll' },
+  { id: 'roll9', name: 'Caterpillar Roll', price: 8.10, type: 'roll' },
+  { id: 'roll10', name: 'Chanel Roll', price: 12.56, type: 'roll' },
+  { id: 'roll11', name: 'Crab Tempura Crunch Roll', price: 9.90, type: 'roll' },
+  { id: 'roll12', name: 'Crispy Rice Roll', price: 12.60, type: 'roll' },
+  { id: 'roll13', name: 'Cucumber Roll', price: 3.56, type: 'roll' },
+  { id: 'roll14', name: 'Dexter Dragon Roll', price: 12.60, type: 'roll' },
+  { id: 'roll15', name: 'Don\'t Be Like Mason Roll', price: 12.60, type: 'roll' },
+  { id: 'roll16', name: 'Double Dragon Roll', price: 13.50, type: 'roll' },
+  { id: 'roll17', name: 'Double Yellowtail Roll', price: 13.50, type: 'roll' },
+  { id: 'roll18', name: 'Fire Down Below Roll', price: 10.35, type: 'roll' },
+  { id: 'roll19', name: 'Fire Tempura Crunch Roll', price: 12.60, type: 'roll' },
+  { id: 'roll20', name: 'Fleury Fire Roll', price: 13.50, type: 'roll' },
+  { id: 'roll21', name: 'Flying Hawaiian Roll', price: 13.50, type: 'roll' },
+  { id: 'roll22', name: 'Futomaki Roll', price: 8.10, type: 'roll' },
+  { id: 'roll23', name: 'GG Special Roll', price: 13.50, type: 'roll' },
+  { id: 'roll24', name: 'Golden Cali Roll', price: 9.00, type: 'roll' },
+  { id: 'roll25', name: 'Golden Knight Roll', price: 12.60, type: 'roll' },
+  { id: 'roll26', name: 'Golden Tiger Roll', price: 12.60, type: 'roll' },
+  { id: 'roll27', name: 'Habanero Roll', price: 12.60, type: 'roll' },
+  { id: 'roll28', name: 'Hawaiian Roll', price: 12.60, type: 'roll' },
+  { id: 'roll29', name: 'Heart Attack Roll', price: 12.60, type: 'roll' },
+  { id: 'roll30', name: 'Hulk Burrito', price: 13.46, type: 'roll' },
+  { id: 'roll31', name: 'Japanese Lasagna Roll', price: 12.60, type: 'roll' },
+  { id: 'roll32', name: 'Johnny Roll', price: 13.46, type: 'roll' },
+  { id: 'roll33', name: 'Kelly Crunch Roll', price: 12.60, type: 'roll' },
+  { id: 'roll34', name: 'Kiss Of Fire Roll', price: 12.60, type: 'roll' },
+  { id: 'roll35', name: 'Knight Hawk Roll', price: 12.60, type: 'roll' },
+  { id: 'roll36', name: 'Knight Time Roll', price: 12.60, type: 'roll' },
+  { id: 'roll37', name: 'Kristen Special Roll', price: 13.50, type: 'roll' },
+  { id: 'roll38', name: 'Lilly Roll', price: 9.90, type: 'roll' },
+  { id: 'roll39', name: 'Lisa Lisa Roll', price: 7.16, type: 'roll' },
+  { id: 'roll40', name: 'Negihama Roll', price: 5.36, type: 'roll' },
+  { id: 'roll41', name: 'ODS Hand Roll', price: 13.46, type: 'roll' },
+  { id: 'roll42', name: 'ODS1 Roll', price: 13.50, type: 'roll' },
+  { id: 'roll43', name: 'ODS2 Roll', price: 12.56, type: 'roll' },
+  { id: 'roll44', name: 'On Demand Roll', price: 11.70, type: 'roll' },
+  { id: 'roll45', name: 'Orange Blossom Roll', price: 12.60, type: 'roll' },
+  { id: 'roll46', name: 'Philly Roll', price: 7.16, type: 'roll' },
+  { id: 'roll47', name: 'Playboy Roll', price: 12.56, type: 'roll' },
+  { id: 'roll48', name: 'Rainbow Roll', price: 13.50, type: 'roll' },
+  { id: 'roll49', name: 'Sake Maki Roll', price: 4.95, type: 'roll' },
+  { id: 'roll50', name: 'Salmon Avocado Roll', price: 8.06, type: 'roll' },
+  { id: 'roll51', name: 'Salmon Skin Hand Roll', price: 9.00, type: 'roll' },
+  { id: 'roll52', name: 'Sammy Special Roll', price: 12.60, type: 'roll' },
+  { id: 'roll53', name: 'Sashimi Roll', price: 13.46, type: 'roll' },
+  { id: 'roll54', name: 'Sexy GG Roll', price: 13.50, type: 'roll' },
+  { id: 'roll55', name: 'Shrimp Tempura Roll', price: 6.26, type: 'roll' },
+  { id: 'roll56', name: 'Something Wrong Roll', price: 12.60, type: 'roll' },
+  { id: 'roll57', name: 'Southern Highlands Roll', price: 13.50, type: 'roll' },
+  { id: 'roll58', name: 'Spicy Crab Roll', price: 7.20, type: 'roll' },
+  { id: 'roll59', name: 'Spicy Crabby Salmon Lemon Roll', price: 12.60, type: 'roll' },
+  { id: 'roll60', name: 'Spicy Tataki Roll', price: 12.56, type: 'roll' },
+  { id: 'roll61', name: 'Spicy Tuna Roll', price: 7.16, type: 'roll' },
+  { id: 'roll62', name: 'Spider Roll', price: 9.90, type: 'roll' },
+  { id: 'roll63', name: 'Tuna roll', price: 5.36, type: 'roll' },
+  { id: 'roll64', name: 'The Cros Roll', price: 12.60, type: 'roll' },
+  { id: 'roll65', name: 'Tiger Roll', price: 12.56, type: 'roll' },
+  { id: 'roll66', name: 'TNT Natasha Roll', price: 12.60, type: 'roll' },
+  { id: 'roll67', name: 'Too Hot Too Sexy Roll', price: 12.60, type: 'roll' },
+  { id: 'roll68', name: 'Tuna Cali', price: 12.60, type: 'roll' },
+  { id: 'roll69', name: 'Veggie Roll', price: 8.10, type: 'roll' },
+  { id: 'roll70', name: 'Wet Dream Roll', price: 12.60, type: 'roll' },
+  { id: 'roll71', name: 'Who\'s Your Mother Roll', price: 12.60, type: 'roll' },
+
+  // Nigiri
+  { id: 'nigiri1', name: 'Ahi Garlic Tuna', price: 11.75, type: 'nigiri' },
+  { id: 'nigiri2', name: 'Ahi Nigiri', price: 11.79, type: 'nigiri' },
+  { id: 'nigiri3', name: 'Albacore Nigiri', price: 11.25, type: 'nigiri' },
+  { id: 'nigiri4', name: 'Ebi (Shrimp) Nigiri', price: 11.15, type: 'nigiri' },
+  { id: 'nigiri5', name: 'Escolar (Super White) Nigiri', price: 11.25, type: 'nigiri' },
+  { id: 'nigiri6', name: 'Hamachi (Yellowtail) Nigiri', price: 12.15, type: 'nigiri' },
+  { id: 'nigiri7', name: 'Hirame (Halibut) Nigiri', price: 12.56, type: 'nigiri' },
+  { id: 'nigiri8', name: 'Salmon Nigiri', price: 11.25, type: 'nigiri' },
+  { id: 'nigiri9', name: 'Smoked Paprika Salmon Nigiri', price: 11.25, type: 'nigiri' },
+  { id: 'nigiri10', name: 'Tamago (Sweet Egg) Nigiri', price: 7.88, type: 'nigiri' },
+  { id: 'nigiri11', name: 'Unagi (Eel) Nigiri', price: 11.25, type: 'nigiri' },
+  { id: 'nigiri12', name: 'Yuzu Yellowtail Nigiri', price: 11.25, type: 'nigiri' },
+
+  // Sashimi
+  { id: 'sashimi1', name: 'Ahi Sashimi', price: 12.25, type: 'sashimi' },
+  { id: 'sashimi2', name: 'Albacore Sashimi', price: 11.25, type: 'sashimi' },
+  { id: 'sashimi3', name: 'Ebi (Shrimp) Sashimi', price: 10.95, type: 'sashimi' },
+  { id: 'sashimi4', name: 'Eel Unagi sashimi', price: 12.25, type: 'sashimi' },
+  { id: 'sashimi5', name: 'Escolar (Super White) Sashimi', price: 6.53, type: 'sashimi' },
+  { id: 'sashimi6', name: 'Garlic Tuna Sashimi', price: 11.76, type: 'sashimi' },
+  { id: 'sashimi7', name: 'Hamachi (Yellowtail) Sashimi', price: 13.05, type: 'sashimi' },
+  { id: 'sashimi8', name: 'Hirame (Halibut) Sashimi', price: 13.46, type: 'sashimi' },
+  { id: 'sashimi9', name: 'Hotate (Scallop) Sashimi', price: 13.46, type: 'sashimi' },
+  { id: 'sashimi10', name: 'Ikura Sashimi', price: 10.13, type: 'sashimi' },
+  { id: 'sashimi11', name: 'Masago Sashimi', price: 10.13, type: 'sashimi' },
+  { id: 'sashimi12', name: 'Salmon (Sake) Sashimi', price: 12.15, type: 'sashimi' },
+  { id: 'sashimi13', name: 'Salmon Belly w/ Fresh Wasabi Sashimi', price: 11.57, type: 'sashimi' },
+
+  // Special Items
+  { id: 'special1', name: 'Unagi Donburi 7 pcs.', price: 13.95, type: 'roll' }
+];
+
 // Restaurant menu data
 const restaurantMenus = {
   "capriottis": {
@@ -251,60 +378,80 @@ const restaurantMenus = {
   "sushi": {
     name: "Sushi on Demand",
     items: [
+      // Sushi Boats (Large Catering Options)
       {
         id: 'sushi1',
-        name: 'California Roll',
-        description: 'Crab, avocado, cucumber with sesame seeds',
-        price: 8.99,
+        name: '50 inch Sushi Boats! Chef Choice',
+        description: 'Get a 50 inch Boat for your next event! It comes with a variety of 16 high quality rolls, 12 Piece Sashimi.',
+        price: 375.00,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/california-roll.jpg'
+        image: '/menu/50-inch-boat.jpg'
       },
       {
         id: 'sushi2',
-        name: 'Salmon Nigiri (2 pieces)',
-        description: 'Fresh salmon over seasoned sushi rice',
-        price: 6.99,
+        name: '50 inch Boat Chef Choice rolls only!',
+        description: 'Get a 50 inch Boat for your next event! 20 Rolls: Poke with seaweed and an avocado.',
+        price: 275.00,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/salmon-nigiri.jpg'
+        image: '/menu/50-inch-rolls-boat.jpg'
       },
       {
         id: 'sushi3',
-        name: 'Spicy Tuna Roll',
-        description: 'Spicy tuna with cucumber and spicy mayo',
-        price: 9.99,
+        name: '60 inch Rolls Chef Choice',
+        description: '12 Pieces 12 Premium 12 Specialty Rolls with Seaweed Salad Poke and Avocado Bomb.',
+        price: 395.00,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/spicy-tuna.jpg'
+        image: '/menu/60-inch-boat.jpg'
       },
       {
         id: 'sushi4',
-        name: 'Vegetable Roll',
-        description: 'Cucumber, avocado, carrot, and lettuce',
-        price: 7.99,
+        name: '60 inch Sushi Boats! Chef Choice Nigiri Sashimi Rolls',
+        description: 'Get a 60 inch Boat for your next event! It comes with a variety of 28 high quality rolls, 20 Pieces Sashimi.',
+        price: 575.00,
         category: 'main' as const,
-        dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/veggie-roll.jpg'
+        dietaryInfo: [],
+        image: '/menu/60-inch-nigiri-boat.jpg'
       },
+
+      // Platters (Customizable - Users select items)
       {
         id: 'sushi5',
-        name: 'Mochi Ice Cream',
-        description: 'Sweet rice cake filled with ice cream (3 pieces)',
-        price: 5.99,
-        category: 'dessert' as const,
-        dietaryInfo: ['vegetarian'],
-        image: '/menu/mochi.jpg'
+        name: '10 Item Platter',
+        description: 'Pick any 10 rolls, Sashimi, or Nigiri and get 10% off the platter! Choose from our extensive selection.',
+        price: 0, // Price calculated based on selections
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/10-item-platter.jpg',
+        isPlatter: true,
+        maxItems: 10
       },
       {
         id: 'sushi6',
-        name: 'Green Tea',
-        description: 'Hot or iced traditional Japanese green tea',
-        price: 2.99,
-        category: 'beverage' as const,
-        dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/green-tea.jpg'
-      }
+        name: '8 Item Platter',
+        description: 'Pick any 8 rolls, Sashimi, or Nigiri and get 10% off the platter! Perfect for smaller groups.',
+        price: 0, // Price calculated based on selections
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/8-item-platter.jpg',
+        isPlatter: true,
+        maxItems: 8
+      },
+      {
+        id: 'sushi7',
+        name: '5 Item Platter',
+        description: 'Pick any 5 rolls, Sashimi, or Nigiri and get 10% off the platter! Great for intimate gatherings.',
+        price: 0, // Price calculated based on selections
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/5-item-platter.jpg',
+        isPlatter: true,
+        maxItems: 5
+      },
+
+
     ]
   },
   "pizza": {
@@ -395,6 +542,11 @@ export default function OrderPage() {
     specialInstructions: ''
   });
 
+  // Platter selection state
+  const [showPlatterModal, setShowPlatterModal] = useState(false);
+  const [selectedPlatter, setSelectedPlatter] = useState<MenuItem | null>(null);
+  const [platterSelections, setPlatterSelections] = useState<PlatterItem[]>([]);
+
   // Pre-fill date from URL parameter if coming from schedule page
   useEffect(() => {
     const dateParam = searchParams.get('date');
@@ -410,7 +562,15 @@ export default function OrderPage() {
   const currentMenu = restaurantMenus[selectedRestaurant].items;
 
   // Add item to cart
-  const addToCart = (menuItem: typeof currentMenu[0]) => {
+  const addToCart = (menuItem: MenuItem) => {
+    // Check if this is a platter item
+    if (menuItem.isPlatter) {
+      setSelectedPlatter(menuItem);
+      setPlatterSelections([]);
+      setShowPlatterModal(true);
+      return;
+    }
+
     const existingItem = cart.find(item => item.id === menuItem.id);
 
     if (existingItem) {
@@ -429,6 +589,43 @@ export default function OrderPage() {
         category: menuItem.category,
         dietaryInfo: menuItem.dietaryInfo as any
       }]);
+    }
+  };
+
+  // Add platter to cart with selected items
+  const addPlatterToCart = () => {
+    if (!selectedPlatter || platterSelections.length !== selectedPlatter.maxItems) {
+      return;
+    }
+
+    const totalPrice = platterSelections.reduce((sum, item) => sum + item.price, 0);
+    const discountedPrice = totalPrice * 0.9; // 10% discount
+
+    const platterName = `${selectedPlatter.name} (${platterSelections.map(item => item.name).join(', ')})`;
+
+    setCart([...cart, {
+      id: `${selectedPlatter.id}-${Date.now()}`, // Unique ID for each platter
+      name: platterName,
+      description: `Custom platter with ${platterSelections.length} items (10% discount applied)`,
+      quantity: 1,
+      price: discountedPrice,
+      category: selectedPlatter.category,
+      dietaryInfo: selectedPlatter.dietaryInfo as any
+    }]);
+
+    setShowPlatterModal(false);
+    setSelectedPlatter(null);
+    setPlatterSelections([]);
+  };
+
+  // Toggle platter item selection
+  const togglePlatterItem = (item: PlatterItem) => {
+    const isSelected = platterSelections.find(selected => selected.id === item.id);
+
+    if (isSelected) {
+      setPlatterSelections(platterSelections.filter(selected => selected.id !== item.id));
+    } else if (platterSelections.length < (selectedPlatter?.maxItems || 0)) {
+      setPlatterSelections([...platterSelections, item]);
     }
   };
 
@@ -1010,6 +1207,107 @@ export default function OrderPage() {
                 >
                   Understood
                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Platter Selection Modal */}
+        {showPlatterModal && selectedPlatter && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">{selectedPlatter.name}</h3>
+                    <p className="text-gray-600 mt-1">
+                      Select {selectedPlatter.maxItems} items ({platterSelections.length}/{selectedPlatter.maxItems} selected)
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowPlatterModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-[60vh]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sushiPlatterItems.map((item) => {
+                    const isSelected = platterSelections.find(selected => selected.id === item.id);
+                    const canSelect = platterSelections.length < (selectedPlatter.maxItems || 0);
+
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => togglePlatterItem(item)}
+                        className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-50'
+                            : canSelect
+                            ? 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-50'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900">{item.name}</h4>
+                            <p className="text-sm text-gray-500 capitalize">{item.type}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-gray-900">${item.price.toFixed(2)}</p>
+                            {isSelected && (
+                              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mt-1 ml-auto">
+                                <span className="text-white text-xs">✓</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Subtotal: ${platterSelections.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
+                    </p>
+                    <p className="text-sm text-green-600">
+                      10% Discount: -${(platterSelections.reduce((sum, item) => sum + item.price, 0) * 0.1).toFixed(2)}
+                    </p>
+                    <p className="font-semibold text-gray-900">
+                      Total: ${(platterSelections.reduce((sum, item) => sum + item.price, 0) * 0.9).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowPlatterModal(false)}
+                      className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={addPlatterToCart}
+                      disabled={platterSelections.length !== selectedPlatter.maxItems}
+                      className={`px-6 py-2 rounded-lg transition ${
+                        platterSelections.length === selectedPlatter.maxItems
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
