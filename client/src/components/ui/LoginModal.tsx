@@ -69,7 +69,11 @@ export default function LoginModal({ isOpen, onClose }: Props) {
             exit={{ y: 20, opacity: 0, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             onClick={e => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+            className="relative w-full max-w-md rounded-2xl p-6 shadow-xl"
+            style={{
+              backgroundColor: 'rgb(250, 244, 232)',
+              border: '2px solid rgb(204, 62, 54)'
+            }}
           >
             <button
               onClick={(e) => {
@@ -82,21 +86,30 @@ export default function LoginModal({ isOpen, onClose }: Props) {
               disabled={isLoading}
               className={`absolute top-3 right-4 text-2xl font-bold ${
                 isLoading
-                  ? 'text-gray-300 cursor-not-allowed'
-                  : 'text-gray-400 hover:text-gray-700'
+                  ? 'cursor-not-allowed'
+                  : 'transition'
               }`}
+              style={{
+                color: isLoading ? 'rgb(204, 62, 54)' : 'rgb(204, 62, 54)'
+              }}
+              onMouseEnter={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(184, 42, 34)')}
+              onMouseLeave={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(204, 62, 54)')}
               aria-label="Close"
             >
               &times;
             </button>
 
-            <h2 className="mb-5 text-center text-2xl font-bold text-gray-900">
+            <h2 className="mb-5 text-center text-2xl font-bold" style={{ color: 'rgb(34, 139, 87)' }}>
               Login to CaterVegas&nbsp;🎲
             </h2>
 
             {/* Error message */}
             {error && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              <div className="mb-4 p-3 rounded-lg" style={{
+                backgroundColor: 'rgba(204, 62, 54, 0.1)',
+                border: '1px solid rgb(204, 62, 54)',
+                color: 'rgb(204, 62, 54)'
+              }}>
                 {error}
               </div>
             )}
@@ -108,7 +121,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
             >
               {/* username */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Username</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Username</span>
                 <input
                   type="text"
                   name="username"
@@ -116,14 +129,19 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                   onChange={handleInputChange}
                   required
                   placeholder="Enter your username"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
 
               {/* password */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Password</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Password</span>
                 <input
                   type="password"
                   name="password"
@@ -131,7 +149,12 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                   onChange={handleInputChange}
                   required
                   placeholder="Enter your password"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
@@ -140,7 +163,10 @@ export default function LoginModal({ isOpen, onClose }: Props) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-xl bg-blue-600 py-2 font-semibold text-white shadow hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-xl py-2 font-semibold text-white shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: 'rgb(34, 139, 87)' }}
+                onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(24, 119, 67)')}
+                onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(34, 139, 87)')}
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>

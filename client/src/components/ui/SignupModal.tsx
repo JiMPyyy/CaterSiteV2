@@ -121,7 +121,11 @@ export default function SignupModal({ isOpen, onClose }: Props) {
             exit={{ y: 20, opacity: 0, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             onClick={e => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+            className="relative w-full max-w-md rounded-2xl p-6 shadow-xl"
+            style={{
+              backgroundColor: 'rgb(255, 255, 255)',
+              border: '2px solid rgb(113, 113, 122)'
+            }}
           >
             <button
               onClick={(e) => {
@@ -134,21 +138,30 @@ export default function SignupModal({ isOpen, onClose }: Props) {
               disabled={isLoading}
               className={`absolute top-3 right-4 text-2xl font-bold ${
                 isLoading
-                  ? 'text-gray-300 cursor-not-allowed'
-                  : 'text-gray-400 hover:text-gray-700'
+                  ? 'cursor-not-allowed'
+                  : 'transition'
               }`}
+              style={{
+                color: isLoading ? 'rgb(204, 62, 54)' : 'rgb(204, 62, 54)'
+              }}
+              onMouseEnter={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(184, 42, 34)')}
+              onMouseLeave={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(204, 62, 54)')}
               aria-label="Close"
             >
               &times;
             </button>
 
-            <h2 className="mb-5 text-center text-2xl font-bold text-gray-900">
+            <h2 className="mb-5 text-center text-2xl font-bold" style={{ color: 'rgb(34, 139, 87)' }}>
               Create Your CaterVegas Account&nbsp;✨
             </h2>
 
             {/* Error message */}
             {(error || localError) && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              <div className="mb-4 p-3 rounded-lg" style={{
+                backgroundColor: 'rgba(204, 62, 54, 0.1)',
+                border: '1px solid rgb(204, 62, 54)',
+                color: 'rgb(204, 62, 54)'
+              }}>
                 {localError || error}
               </div>
             )}
@@ -160,7 +173,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
             >
               {/* username */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Username</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Username</span>
                 <input
                   type="text"
                   name="username"
@@ -168,14 +181,19 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                   onChange={handleInputChange}
                   required
                   placeholder="Choose a username"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
 
               {/* email */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Email</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Email</span>
                 <input
                   type="email"
                   name="email"
@@ -183,28 +201,38 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                   onChange={handleInputChange}
                   required
                   placeholder="you@example.com"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
 
               {/* phone */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Phone</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Phone</span>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="(702) 555‑5555"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
 
               {/* password */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Password</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Password</span>
                 <input
                   type="password"
                   name="password"
@@ -212,14 +240,19 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                   onChange={handleInputChange}
                   required
                   placeholder="Create a password"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
 
               {/* confirm password */}
               <label className="block">
-                <span className="text-sm font-medium text-gray-700">Confirm Password</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Confirm Password</span>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -227,7 +260,12 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                   onChange={handleInputChange}
                   required
                   placeholder="Re-enter password"
-                  className="mt-1 w-full rounded-xl border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
+                  style={{
+                    border: '1px solid rgb(204, 62, 54)',
+                    backgroundColor: 'rgb(250, 244, 232)',
+                    color: 'rgb(34, 139, 87)'
+                  }}
                   disabled={isLoading}
                 />
               </label>
@@ -235,13 +273,20 @@ export default function SignupModal({ isOpen, onClose }: Props) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full rounded-xl bg-blue-600 py-2 font-semibold text-white shadow hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-xl py-2 font-semibold text-white shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: 'rgb(34, 139, 87)' }}
+                onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(24, 119, 67)')}
+                onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(34, 139, 87)')}
               >
                 {isLoading ? 'Creating Account...' : 'Sign Up'}
               </button>
 
               {/* Debug info */}
-              <div className="text-xs text-gray-500 mt-2 bg-gray-100 p-2 rounded">
+              <div className="text-xs mt-2 p-2 rounded" style={{
+                color: 'rgb(34, 139, 87)',
+                backgroundColor: 'rgba(34, 139, 87, 0.1)',
+                border: '1px solid rgb(204, 62, 54)'
+              }}>
                 <p>Debug: API URL = {process.env.NEXT_PUBLIC_API_URL}</p>
                 <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
                 <p>Username: "{formData.username}" (length: {formData.username.length})</p>

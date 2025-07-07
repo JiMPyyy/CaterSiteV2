@@ -184,9 +184,9 @@ const PaymentForm = ({ amount, onPaymentSuccess, onPaymentError, isProcessing, s
     style: {
       base: {
         fontSize: '16px',
-        color: '#424770',
+        color: 'rgb(15, 15, 15)',
         '::placeholder': {
-          color: '#aab7c4',
+          color: 'rgb(113, 113, 122)',
         },
       },
     },
@@ -194,47 +194,49 @@ const PaymentForm = ({ amount, onPaymentSuccess, onPaymentError, isProcessing, s
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-gray-50 p-4 rounded-lg border">
+      <div className="p-4 rounded-lg" style={{
+        backgroundColor: 'rgba(15, 15, 15, 0.02)',
+        border: '1px solid rgb(113, 113, 122)'
+      }}>
         <div className="flex items-center gap-2 mb-3">
-          <CreditCard size={20} className="text-gray-600" />
-          <span className="font-medium text-gray-900">Payment Information</span>
-          <Lock size={16} className="text-green-600" />
+          <CreditCard size={18} style={{ color: 'rgb(113, 113, 122)' }} />
+          <span className="font-medium text-sm" style={{ color: 'rgb(15, 15, 15)' }}>Card Information</span>
+          <Lock size={14} style={{ color: 'rgb(15, 15, 15)' }} />
         </div>
-        
-        <div className="bg-white p-3 rounded border">
+
+        <div className="p-3 rounded" style={{
+          backgroundColor: 'rgb(255, 255, 255)',
+          border: '1px solid rgb(113, 113, 122)'
+        }}>
           <CardElement
             options={cardElementOptions}
             onChange={handleCardChange}
           />
         </div>
-        
-        <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-          <Lock size={12} />
-          Your payment information is secure and encrypted
-        </p>
-      </div>
 
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <div className="flex justify-between items-center">
-          <span className="font-medium text-gray-900">Total Amount:</span>
-          <span className="text-xl font-bold text-blue-600">${amount.toFixed(2)}</span>
-        </div>
+        <p className="text-xs mt-2 flex items-center gap-1" style={{ color: 'rgb(113, 113, 122)' }}>
+          <Lock size={12} />
+          Secure & encrypted payment
+        </p>
       </div>
 
       <button
         type="submit"
         disabled={!stripe || isProcessing || !clientSecret}
-        className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+        className="w-full text-white py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center gap-2"
+        style={{ backgroundColor: 'rgb(15, 15, 15)' }}
+        onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)')}
+        onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(15, 15, 15)')}
       >
         {isProcessing ? (
           <>
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            Processing Payment...
+            Processing...
           </>
         ) : (
           <>
             <Lock size={16} />
-            Pay ${amount.toFixed(2)}
+            Complete Payment - ${amount.toFixed(2)}
           </>
         )}
       </button>
