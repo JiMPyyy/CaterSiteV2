@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Plus, Minus, ShoppingCart, Calendar, MapPin } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, Calendar, MapPin, Clock, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { orderService, OrderItem, CreateOrderData } from '@/lib/services/orders';
 import Navigation from '@/components/layout/Navigation';
@@ -31,52 +31,70 @@ const restaurantMenus = {
         price: 89.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: 'https://www.reviewjournal.com/wp-content/uploads/2019/11/12550314_web1_TheBobbie.jpg'
+        image: '/menu/Capriottis-Bobbie-Tray.webp'
       },
       {
         id: 'cap2',
-        name: 'Italian Sub Party Tray',
+        name: 'Little Italy Party Tray',
         description: 'Classic Italian sub with premium meats and cheese, cut for sharing. Serves 10-12 people.',
         price: 84.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/italian-sub.jpg'
+        image: '/menu/Capriottis-Little-Italy-Tray.webp'
       },
       {
         id: 'cap3',
-        name: 'Cheese Steak Party Tray',
-        description: 'Philly-style cheese steak with grilled onions and peppers. Serves 10-12 people.',
-        price: 94.99,
+        name: 'Delaware\'s Finest Party Tray',
+        description: 'Premium turkey and cheese with fresh vegetables. Serves 10-12 people.',
+        price: 87.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/cheese-steak.jpg'
+        image: '/menu/Capriottis-DelawaresFinest-Tray.webp'
       },
       {
         id: 'cap4',
-        name: 'Veggie Sub Party Tray',
+        name: 'Turkey Lovers Party Tray',
+        description: 'Fresh roasted turkey with premium fixings. Serves 10-12 people.',
+        price: 82.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/Capriottis-Turkey-Lovers-Tray.webp'
+      },
+      {
+        id: 'cap5',
+        name: 'Vegetarian Party Tray',
         description: 'Fresh vegetables with cheese and Italian dressing. Serves 10-12 people.',
         price: 74.99,
         category: 'main' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/veggie-sub.jpg'
+        image: '/menu/Capriottis-Vegetarian-Tray.webp'
       },
       {
-        id: 'cap5',
+        id: 'cap6',
+        name: 'Wagyu Cheese Steak Party Tray',
+        description: 'Premium Wagyu beef cheese steak with grilled onions and peppers. Serves 10-12 people.',
+        price: 109.99,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/Capriottis-Waygu-Tray.webp'
+      },
+      {
+        id: 'cap7',
         name: 'Assorted Cookie Tray',
         description: 'Fresh baked cookies - chocolate chip, oatmeal raisin, and sugar cookies.',
         price: 24.99,
         category: 'dessert' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/cookie.jpg'
+        image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=300&fit=crop&crop=center'
       },
       {
-        id: 'cap6',
+        id: 'cap8',
         name: 'Assorted Sodas (12-pack)',
         description: 'Variety pack of Coca-Cola products.',
         price: 18.99,
         category: 'beverage' as const,
         dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/soda.jpg'
+        image: 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=400&h=300&fit=crop&crop=center'
       }
     ]
   },
@@ -90,7 +108,7 @@ const restaurantMenus = {
         price: 8.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/california-roll.jpg'
+        image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'sushi2',
@@ -99,7 +117,7 @@ const restaurantMenus = {
         price: 6.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/salmon-nigiri.jpg'
+        image: 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'sushi3',
@@ -108,7 +126,7 @@ const restaurantMenus = {
         price: 9.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/spicy-tuna.jpg'
+        image: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'sushi4',
@@ -117,7 +135,7 @@ const restaurantMenus = {
         price: 7.99,
         category: 'main' as const,
         dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/veggie-roll.jpg'
+        image: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'sushi5',
@@ -126,7 +144,7 @@ const restaurantMenus = {
         price: 5.99,
         category: 'dessert' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/mochi.jpg'
+        image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'sushi6',
@@ -135,7 +153,7 @@ const restaurantMenus = {
         price: 2.99,
         category: 'beverage' as const,
         dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/green-tea.jpg'
+        image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop&crop=center'
       }
     ]
   },
@@ -149,7 +167,7 @@ const restaurantMenus = {
         price: 14.99,
         category: 'main' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/margherita.jpg'
+        image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'pizza2',
@@ -158,7 +176,7 @@ const restaurantMenus = {
         price: 16.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/pepperoni.jpg'
+        image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'pizza3',
@@ -167,7 +185,7 @@ const restaurantMenus = {
         price: 19.99,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/supreme.jpg'
+        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'pizza4',
@@ -176,7 +194,7 @@ const restaurantMenus = {
         price: 6.99,
         category: 'main' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/garlic-bread.jpg'
+        image: 'https://images.unsplash.com/photo-1619985632461-f33748ef8d3d?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'pizza5',
@@ -185,7 +203,7 @@ const restaurantMenus = {
         price: 7.99,
         category: 'dessert' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/tiramisu.jpg'
+        image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=300&fit=crop&crop=center'
       },
       {
         id: 'pizza6',
@@ -194,7 +212,7 @@ const restaurantMenus = {
         price: 3.49,
         category: 'beverage' as const,
         dietaryInfo: ['vegetarian', 'vegan'],
-        image: '/menu/italian-soda.jpg'
+        image: 'https://images.unsplash.com/photo-1437418747212-8d9709afab22?w=400&h=300&fit=crop&crop=center'
       }
     ]
   }
@@ -218,6 +236,11 @@ export default function OrderPage() {
   const [showPayment, setShowPayment] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Time picker state
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const timePickerRef = useRef<HTMLDivElement>(null);
 
   // Handle form submission (proceed to payment)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -281,7 +304,7 @@ export default function OrderPage() {
 
       if (response.success) {
         // Order created successfully
-        alert('Order placed successfully! You will receive a confirmation email shortly.');
+        setShowSuccessModal(true);
         setCart([]);
         setDeliveryInfo({
           date: '',
@@ -322,16 +345,58 @@ export default function OrderPage() {
     specialInstructions: ''
   });
 
-  // Pre-fill date from URL parameter if coming from schedule page
+  // Pre-fill date and time from URL parameters if coming from schedule page
   useEffect(() => {
     const dateParam = searchParams.get('date');
-    if (dateParam) {
+    const timeParam = searchParams.get('time');
+
+    if (dateParam || timeParam) {
       setDeliveryInfo(prev => ({
         ...prev,
-        date: dateParam
+        ...(dateParam && { date: dateParam }),
+        ...(timeParam && { time: timeParam })
       }));
     }
   }, [searchParams]);
+
+  // Handle click outside time picker to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (timePickerRef.current && !timePickerRef.current.contains(event.target as Node)) {
+        setShowTimePicker(false);
+      }
+    };
+
+    if (showTimePicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showTimePicker]);
+
+  // Generate time options (every 30 minutes from 6:00 AM to 10:00 PM)
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 6; hour <= 22; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        const displayTime = new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        times.push({ value: timeString, display: displayTime });
+      }
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  // Handle time selection
+  const handleTimeSelect = (timeValue: string) => {
+    setDeliveryInfo({ ...deliveryInfo, time: timeValue });
+    setShowTimePicker(false);
+  };
 
   const currentMenu = restaurantMenus[selectedRestaurant].items;
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -1025,10 +1090,20 @@ export default function OrderPage() {
 
                     {/* Delivery Information Form */}
                     <form onSubmit={handleSubmit} className="space-y-4 pt-4" style={{ borderTop: '1px solid rgb(113, 113, 122)' }}>
-                      <h4 className="font-semibold flex items-center gap-2" style={{ color: 'rgb(15, 15, 15)' }}>
-                        <Calendar size={16} />
-                        Delivery Details
-                      </h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold flex items-center gap-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                          <Calendar size={16} />
+                          Delivery Details
+                        </h4>
+                        {(searchParams.get('date') || searchParams.get('time')) && (
+                          <span className="text-xs px-2 py-1 rounded-full" style={{
+                            backgroundColor: 'rgba(15, 15, 15, 0.1)',
+                            color: 'rgb(113, 113, 122)'
+                          }}>
+                            📅 From Schedule
+                          </span>
+                        )}
+                      </div>
 
                       <div className="space-y-3">
                         <div>
@@ -1046,20 +1121,84 @@ export default function OrderPage() {
                             required
                           />
                         </div>
-                        <div>
+                        <div className="relative">
                           <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(15, 15, 15)' }}>Time</label>
-                          <input
-                            type="time"
-                            value={deliveryInfo.time}
-                            onChange={(e) => setDeliveryInfo({...deliveryInfo, time: e.target.value})}
-                            className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                          <div
+                            onClick={() => setShowTimePicker(!showTimePicker)}
+                            className="w-full rounded-lg px-3 py-2 text-sm cursor-pointer flex items-center justify-between"
                             style={{
                               border: '1px solid rgb(113, 113, 122)',
                               backgroundColor: 'rgb(255, 255, 255)',
                               color: 'rgb(15, 15, 15)'
                             }}
-                            required
-                          />
+                          >
+                            <span>
+                              {deliveryInfo.time ?
+                                new Date(`2000-01-01T${deliveryInfo.time}`).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                }) :
+                                'Select time'
+                              }
+                            </span>
+                            <Clock size={16} style={{ color: 'rgb(113, 113, 122)' }} />
+                          </div>
+
+                          {showTimePicker && (
+                            <div
+                              ref={timePickerRef}
+                              className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto"
+                              style={{
+                                backgroundColor: 'rgb(255, 255, 255)',
+                                border: '2px solid rgb(113, 113, 122)'
+                              }}
+                            >
+                              {/* Close button */}
+                              <div className="sticky top-0 flex justify-between items-center p-2" style={{ backgroundColor: 'rgb(255, 255, 255)', borderBottom: '1px solid rgb(113, 113, 122)' }}>
+                                <span className="text-sm font-medium" style={{ color: 'rgb(15, 15, 15)' }}>Select Time</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowTimePicker(false);
+                                  }}
+                                  className="w-6 h-6 rounded-full flex items-center justify-center transition-colors duration-200"
+                                  style={{ backgroundColor: 'rgb(113, 113, 122)' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(82, 82, 91)'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(113, 113, 122)'}
+                                >
+                                  <X size={12} className="text-white" />
+                                </button>
+                              </div>
+
+                              {/* Time options */}
+                              <div className="p-1">
+                                {timeOptions.map((time) => (
+                                  <div
+                                    key={time.value}
+                                    onClick={() => handleTimeSelect(time.value)}
+                                    className="px-3 py-2 text-sm cursor-pointer rounded transition-colors duration-150"
+                                    style={{
+                                      color: deliveryInfo.time === time.value ? 'white' : 'rgb(15, 15, 15)',
+                                      backgroundColor: deliveryInfo.time === time.value ? 'rgb(15, 15, 15)' : 'transparent'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      if (deliveryInfo.time !== time.value) {
+                                        e.currentTarget.style.backgroundColor = 'rgba(113, 113, 122, 0.1)';
+                                      }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      if (deliveryInfo.time !== time.value) {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                      }
+                                    }}
+                                  >
+                                    {time.display}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1178,7 +1317,7 @@ export default function OrderPage() {
         {/* Payment Modal */}
         {showPayment && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
             onClick={() => setShowPayment(false)}
           >
             <motion.div
@@ -1189,7 +1328,8 @@ export default function OrderPage() {
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.98)',
                 border: '2px solid rgb(113, 113, 122)',
-                backdropFilter: 'blur(8px)'
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.8)'
               }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -1224,6 +1364,89 @@ export default function OrderPage() {
                   isProcessing={isProcessingPayment}
                   setIsProcessing={setIsProcessingPayment}
                 />
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Success Modal */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 50 }}
+              className="rounded-xl shadow-2xl max-w-md w-full p-8"
+              style={{
+                backgroundColor: 'rgb(255, 255, 255)',
+                border: '2px solid rgb(15, 15, 15)'
+              }}
+            >
+              <div className="text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="text-6xl mb-4"
+                >
+                  🎉
+                </motion.div>
+                <motion.h3
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-2xl font-bold mb-3"
+                  style={{ color: 'rgb(15, 15, 15)' }}
+                >
+                  Order Placed Successfully!
+                </motion.h3>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="mb-6 text-lg"
+                  style={{ color: 'rgb(113, 113, 122)' }}
+                >
+                  Thank you for your order! You will receive a confirmation email shortly with all the details.
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-3"
+                >
+                  <button
+                    onClick={() => setShowSuccessModal(false)}
+                    className="w-full text-white px-6 py-3 rounded-lg transition font-semibold"
+                    style={{ backgroundColor: 'rgb(15, 15, 15)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(15, 15, 15)'}
+                  >
+                    Continue Shopping
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowSuccessModal(false);
+                      window.location.href = '/schedule';
+                    }}
+                    className="w-full px-6 py-3 rounded-lg transition font-medium"
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: '2px solid rgb(113, 113, 122)',
+                      color: 'rgb(113, 113, 122)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgb(113, 113, 122)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = 'rgb(113, 113, 122)';
+                    }}
+                  >
+                    View Schedule
+                  </button>
+                </motion.div>
               </div>
             </motion.div>
           </div>

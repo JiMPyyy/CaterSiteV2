@@ -20,6 +20,7 @@ export default function SchedulePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showActionModal, setShowActionModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<string>('12:00');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Fetch orders on component mount
@@ -59,6 +60,9 @@ export default function SchedulePage() {
 
     setSelectedOrder(existingOrder || null);
 
+    // Reset time to default when opening modal
+    setSelectedTime('12:00');
+
     setShowActionModal(true);
   };
 
@@ -75,8 +79,8 @@ export default function SchedulePage() {
   // Handle creating a new order
   const handleCreateOrder = () => {
     setShowActionModal(false);
-    // Pass the selected date as a URL parameter
-    router.push(`/order?date=${selectedDate}`);
+    // Pass both the selected date and time as URL parameters
+    router.push(`/order?date=${selectedDate}&time=${selectedTime}`);
   };
 
   // Handle deleting an order
@@ -294,6 +298,43 @@ export default function SchedulePage() {
                       </div>
                     )}
 
+                    {/* Time Selection */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Select Delivery Time:
+                      </label>
+                      <select
+                        value={selectedTime}
+                        onChange={(e) => setSelectedTime(e.target.value)}
+                        className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                        style={{
+                          border: '1px solid rgb(113, 113, 122)',
+                          backgroundColor: 'rgb(255, 255, 255)',
+                          color: 'rgb(15, 15, 15)'
+                        }}
+                      >
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="16:30">4:30 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="17:30">5:30 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                        <option value="18:30">6:30 PM</option>
+                        <option value="19:00">7:00 PM</option>
+                        <option value="19:30">7:30 PM</option>
+                        <option value="20:00">8:00 PM</option>
+                      </select>
+                    </div>
+
                     {/* Action Buttons */}
                     <div className="space-y-3">
                       {/* Create Order Button */}
@@ -305,7 +346,7 @@ export default function SchedulePage() {
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(15, 15, 15)'}
                       >
                         <ShoppingCart size={20} />
-                        <span>Create Order for this Date</span>
+                        <span>Create Order for {selectedTime ? new Date(`2000-01-01T${selectedTime}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'this time'}</span>
                       </button>
 
                       {/* Delete Order Button - Only show if there's an existing order */}
