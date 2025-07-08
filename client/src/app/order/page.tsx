@@ -19,6 +19,7 @@ type MenuItem = {
   image: string;
   isCustomizable?: boolean;
   pricing?: { small: number; large: number };
+  flavors?: string[];
 };
 
 // Individual sandwich options for sampler plate
@@ -150,13 +151,15 @@ const restaurantMenus = {
         image: '/menu/Capriottis-Cookie-brookie-Tray.webp'
       },
       {
-        id: 'cap8',
-        name: 'Assorted Sodas (12-pack)',
-        description: 'Variety pack of Coca-Cola products.',
-        price: 18.99,
+        id: 'cap-soda',
+        name: '20oz Bottle',
+        description: 'Choose from our selection of refreshing beverages.',
+        price: 3.29,
         category: 'beverage' as const,
-        dietaryInfo: ['vegetarian', 'vegan'],
-        image: 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=400&h=300&fit=crop&crop=center'
+        dietaryInfo: [],
+        image: '/menu/sandwiches/soda-bottles.webp',
+        isCustomizable: true,
+        flavors: ['Mountain Dew', 'Pepsi', 'Pepsi No Sugar', 'Blue Gatorade']
       }
     ]
   },
@@ -315,6 +318,12 @@ export default function OrderPage() {
   const [selectedTray, setSelectedTray] = useState<any>(null);
   const [trayQuantities, setTrayQuantities] = useState<{small: number, large: number}>({small: 0, large: 0});
   const trayModalRef = useRef<HTMLDivElement>(null);
+
+  // Soda flavor selection state
+  const [showSodaModal, setShowSodaModal] = useState(false);
+  const [selectedSoda, setSelectedSoda] = useState<any>(null);
+  const [sodaQuantities, setSodaQuantities] = useState<{[key: string]: number}>({});
+  const sodaModalRef = useRef<HTMLDivElement>(null);
 
   // Calculate sampler price with Wagyu upcharges
   const calculateSamplerPrice = () => {
@@ -808,7 +817,7 @@ export default function OrderPage() {
                     <p style={{ color: 'rgb(113, 113, 122)' }}>Premium entrees and signature dishes</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {currentMenu.filter(item => item.category === 'main').map((item) => (
                     <motion.div
                       key={item.id}
@@ -820,7 +829,7 @@ export default function OrderPage() {
                       }}
                     >
                       {item.image && (
-                        <div className="h-56 w-full overflow-hidden relative">
+                        <div className="h-40 w-full overflow-hidden relative">
                           <img
                             src={item.image}
                             alt={item.name}
@@ -833,20 +842,20 @@ export default function OrderPage() {
                         </div>
                       )}
 
-                      <div className="p-6 flex flex-col flex-grow">
+                      <div className="p-4 flex flex-col flex-grow">
                         <div className="flex justify-between items-start mb-3">
-                          <h4 className="text-xl font-bold transition-colors duration-200" style={{
+                          <h4 className="text-lg font-bold transition-colors duration-200" style={{
                             color: 'rgb(15, 15, 15)'
                           }}>
                             {item.name}
                           </h4>
                           {!('isCustomizable' in item && item.isCustomizable) && (
                             <div className="text-right">
-                              <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
+                              <span className="text-xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
                             </div>
                           )}
                         </div>
-                        <p className="mb-4 leading-relaxed flex-grow" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
+                        <p className="mb-3 leading-relaxed flex-grow text-sm" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
 
                         {/* Dietary Info */}
                         {item.dietaryInfo.length > 0 && (
@@ -879,6 +888,14 @@ export default function OrderPage() {
                                 onClick={() => {
                                   if (item.id === 'cap-sampler') {
                                     setShowSamplerModal(true);
+                                  } else if (item.id === 'cap-soda') {
+                                    setSelectedSoda(item);
+                                    const initialQuantities: {[key: string]: number} = {};
+                                    if ('flavors' in item && item.flavors) {
+                                      (item.flavors as string[]).forEach((flavor: string) => initialQuantities[flavor] = 0);
+                                    }
+                                    setSodaQuantities(initialQuantities);
+                                    setShowSodaModal(true);
                                   } else if ('isCustomizable' in item && item.isCustomizable && 'pricing' in item && item.pricing) {
                                     setSelectedTray(item);
                                     setTrayQuantities({small: 0, large: 0}); // Reset quantities
@@ -900,6 +917,14 @@ export default function OrderPage() {
                               onClick={() => {
                                 if (item.id === 'cap-sampler') {
                                   setShowSamplerModal(true);
+                                } else if (item.id === 'cap-soda') {
+                                  setSelectedSoda(item);
+                                  const initialQuantities: {[key: string]: number} = {};
+                                  if ('flavors' in item && item.flavors) {
+                                    (item.flavors as string[]).forEach((flavor: string) => initialQuantities[flavor] = 0);
+                                  }
+                                  setSodaQuantities(initialQuantities);
+                                  setShowSodaModal(true);
                                 } else if ('isCustomizable' in item && item.isCustomizable && 'pricing' in item && item.pricing) {
                                   setSelectedTray(item);
                                   setTrayQuantities({small: 0, large: 0}); // Reset quantities
@@ -936,7 +961,7 @@ export default function OrderPage() {
                       <p style={{ color: 'rgb(113, 113, 122)' }}>Sweet endings to your perfect meal</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {currentMenu.filter(item => item.category === 'dessert').map((item) => (
                       <motion.div
                         key={item.id}
@@ -948,7 +973,7 @@ export default function OrderPage() {
                         }}
                       >
                         {item.image && (
-                          <div className="h-56 w-full overflow-hidden relative">
+                          <div className="h-40 w-full overflow-hidden relative">
                             <img
                               src={item.image}
                               alt={item.name}
@@ -963,20 +988,20 @@ export default function OrderPage() {
                           </div>
                         )}
 
-                        <div className="p-6 flex flex-col flex-grow">
+                        <div className="p-4 flex flex-col flex-grow">
                           <div className="flex justify-between items-start mb-3">
-                            <h4 className="text-xl font-bold transition-colors duration-200" style={{
+                            <h4 className="text-lg font-bold transition-colors duration-200" style={{
                               color: 'rgb(15, 15, 15)'
                             }}>
                               {item.name}
                             </h4>
                             {!('isCustomizable' in item && item.isCustomizable) && (
                               <div className="text-right">
-                                <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
+                                <span className="text-xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
                               </div>
                             )}
                           </div>
-                          <p className="mb-4 leading-relaxed flex-grow" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
+                          <p className="mb-3 leading-relaxed flex-grow text-sm" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
 
                           {/* Dietary Info */}
                           {item.dietaryInfo.length > 0 && (
@@ -1047,7 +1072,7 @@ export default function OrderPage() {
                       <p style={{ color: 'rgb(113, 113, 122)' }}>Refreshing drinks to complement your meal</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {currentMenu.filter(item => item.category === 'beverage').map((item) => (
                       <motion.div
                         key={item.id}
@@ -1059,7 +1084,7 @@ export default function OrderPage() {
                         }}
                       >
                         {item.image && (
-                          <div className="h-56 w-full overflow-hidden relative">
+                          <div className="h-40 w-full overflow-hidden relative">
                             <img
                               src={item.image}
                               alt={item.name}
@@ -1072,20 +1097,20 @@ export default function OrderPage() {
                           </div>
                         )}
 
-                        <div className="p-6 flex flex-col flex-grow">
+                        <div className="p-4 flex flex-col flex-grow">
                           <div className="flex justify-between items-start mb-3">
-                            <h4 className="text-xl font-bold transition-colors duration-200" style={{
+                            <h4 className="text-lg font-bold transition-colors duration-200" style={{
                               color: 'rgb(15, 15, 15)'
                             }}>
                               {item.name}
                             </h4>
                             {!('isCustomizable' in item && item.isCustomizable) && (
                               <div className="text-right">
-                                <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
+                                <span className="text-xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
                               </div>
                             )}
                           </div>
-                          <p className="mb-4 leading-relaxed flex-grow" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
+                          <p className="mb-3 leading-relaxed flex-grow text-sm" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
 
                           {/* Dietary Info */}
                           {item.dietaryInfo.length > 0 && (
@@ -1115,7 +1140,19 @@ export default function OrderPage() {
                                   {cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}
                                 </span>
                                 <button
-                                  onClick={() => addToCart(item)}
+                                  onClick={() => {
+                                    if (item.id === 'cap-soda') {
+                                      setSelectedSoda(item);
+                                      const initialQuantities: {[key: string]: number} = {};
+                                      if ('flavors' in item && item.flavors) {
+                                        (item.flavors as string[]).forEach((flavor: string) => initialQuantities[flavor] = 0);
+                                      }
+                                      setSodaQuantities(initialQuantities);
+                                      setShowSodaModal(true);
+                                    } else {
+                                      addToCart(item);
+                                    }
+                                  }}
                                   className="w-10 h-10 text-white rounded-lg transition-all duration-200 flex items-center justify-center hover:scale-105"
                                   style={{ backgroundColor: 'rgb(15, 15, 15)' }}
                                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
@@ -1126,7 +1163,19 @@ export default function OrderPage() {
                               </div>
                             ) : (
                               <button
-                                onClick={() => addToCart(item)}
+                                onClick={() => {
+                                  if (item.id === 'cap-soda') {
+                                    setSelectedSoda(item);
+                                    const initialQuantities: {[key: string]: number} = {};
+                                    if ('flavors' in item && item.flavors) {
+                                      (item.flavors as string[]).forEach((flavor: string) => initialQuantities[flavor] = 0);
+                                    }
+                                    setSodaQuantities(initialQuantities);
+                                    setShowSodaModal(true);
+                                  } else {
+                                    addToCart(item);
+                                  }
+                                }}
                                 className="w-full text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-lg hover:scale-105 hover:shadow-lg"
                                 style={{ backgroundColor: 'rgb(15, 15, 15)' }}
                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
@@ -1757,6 +1806,130 @@ export default function OrderPage() {
                     disabled={trayQuantities.small + trayQuantities.large === 0}
                     className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
                       trayQuantities.small + trayQuantities.large > 0
+                        ? 'bg-black hover:bg-gray-800'
+                        : 'bg-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Soda Flavor Selection Modal */}
+        {showSodaModal && selectedSoda && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
+            <motion.div
+              ref={sodaModalRef}
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full pointer-events-auto border-2 border-gray-200"
+            >
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                    Select Flavors
+                  </h2>
+                  <button
+                    onClick={() => setShowSodaModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Item Name */}
+                <h3 className="text-lg font-semibold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                  {selectedSoda.name}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm mb-6" style={{ color: 'rgb(113, 113, 122)' }}>
+                  ${selectedSoda.price.toFixed(2)} each - Select your favorite flavors
+                </p>
+
+                {/* Flavor Selection with Quantity */}
+                <div className="space-y-4">
+                  {selectedSoda.flavors?.map((flavor: string) => (
+                    <div key={flavor} className="border-2 border-gray-200 p-4 rounded-xl">
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <h4 className="font-semibold text-lg" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {flavor}
+                          </h4>
+                          <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                            ${selectedSoda.price.toFixed(2)} each
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => setSodaQuantities(prev => ({
+                            ...prev,
+                            [flavor]: Math.max(0, (prev[flavor] || 0) - 1)
+                          }))}
+                          className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="text-lg font-bold min-w-[2rem] text-center" style={{ color: 'rgb(15, 15, 15)' }}>
+                          {sodaQuantities[flavor] || 0}
+                        </span>
+                        <button
+                          onClick={() => setSodaQuantities(prev => ({
+                            ...prev,
+                            [flavor]: (prev[flavor] || 0) + 1
+                          }))}
+                          className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Add to Cart Button */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                      Total: ${(Object.values(sodaQuantities).reduce((sum, qty) => sum + qty, 0) * selectedSoda.price).toFixed(2)}
+                    </span>
+                    <span className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                      {Object.values(sodaQuantities).reduce((sum, qty) => sum + qty, 0)} bottle(s)
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      // Add each flavor with its quantity to cart
+                      Object.entries(sodaQuantities).forEach(([flavor, quantity]) => {
+                        if (quantity > 0) {
+                          const sodaItem = {
+                            ...selectedSoda,
+                            id: `${selectedSoda.id}-${flavor.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+                            name: `${selectedSoda.name} - ${flavor}`,
+                            description: `${flavor} flavored beverage`,
+                            price: selectedSoda.price
+                          };
+                          addToCartWithQuantity(sodaItem, quantity);
+                        }
+                      });
+
+                      // Reset and close modal
+                      const initialQuantities: {[key: string]: number} = {};
+                      (selectedSoda.flavors as string[]).forEach((flavor: string) => initialQuantities[flavor] = 0);
+                      setSodaQuantities(initialQuantities);
+                      setShowSodaModal(false);
+                    }}
+                    disabled={Object.values(sodaQuantities).reduce((sum, qty) => sum + qty, 0) === 0}
+                    className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
+                      Object.values(sodaQuantities).reduce((sum, qty) => sum + qty, 0) > 0
                         ? 'bg-black hover:bg-gray-800'
                         : 'bg-gray-300 cursor-not-allowed'
                     }`}
