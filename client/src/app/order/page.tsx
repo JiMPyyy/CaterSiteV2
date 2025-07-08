@@ -23,20 +23,20 @@ type MenuItem = {
 
 // Individual sandwich options for sampler plate
 const capriottisIndividualSandwiches = [
-  { id: 'bobbie', name: 'The Bobbie®', price: 6.29, image: '/menu/sandwiches/bobbie.jpg' },
-  { id: 'cole-turkey', name: 'Cole Turkey®', price: 6.29, image: '/menu/sandwiches/cole-turkey.jpg' },
-  { id: 'wagyu-slaw', name: 'American Wagyu Slaw Be Jo®', price: 6.29, image: '/menu/sandwiches/wagyu-slaw.jpg' },
-  { id: 'wagyu-roast', name: 'American Wagyu Roast Beef', price: 6.29, image: '/menu/sandwiches/wagyu-roast.jpg' },
-  { id: 'veggie-turkey', name: 'Veggie Turkey', price: 6.29, image: '/menu/sandwiches/veggie-turkey.jpg' },
-  { id: 'veggie-cole', name: 'Veggie Cole Turkey®', price: 6.29, image: '/menu/sandwiches/veggie-cole.jpg' },
-  { id: 'homemade-turkey', name: 'Homemade Turkey Sub', price: 6.29, image: '/menu/sandwiches/homemade-turkey.jpg' },
-  { id: 'italian-sub', name: 'Italian Sub', price: 6.29, image: '/menu/sandwiches/italian-sub.jpg' },
-  { id: 'tuna-sub', name: 'Tuna Sub', price: 6.29, image: '/menu/sandwiches/tuna-sub.jpg' },
-  { id: 'blt', name: 'The BLT', price: 6.29, image: '/menu/sandwiches/blt.jpg' },
-  { id: 'cheese-sub', name: 'Cheese Sub', price: 6.29, image: '/menu/sandwiches/cheese-sub.jpg' },
-  { id: 'prosciuttini', name: 'Prosciuttini', price: 6.29, image: '/menu/sandwiches/prosciuttini.jpg' },
-  { id: 'classic-club', name: 'Classic Club', price: 6.29, image: '/menu/sandwiches/classic-club.jpg' },
-  { id: 'wagyu-club', name: 'Wagyu Club', price: 6.29, image: '/menu/sandwiches/wagyu-club.jpg' }
+  { id: 'bobbie', name: 'The Bobbie®', isWagyu: false, image: '/menu/sandwiches/bobbie.jpg' },
+  { id: 'cole-turkey', name: 'Cole Turkey®', isWagyu: false, image: '/menu/sandwiches/cole-turkey.jpg' },
+  { id: 'wagyu-slaw', name: 'American Wagyu Slaw Be Jo®', isWagyu: true, image: '/menu/sandwiches/wagyu-slaw.jpg' },
+  { id: 'wagyu-roast', name: 'American Wagyu Roast Beef', isWagyu: true, image: '/menu/sandwiches/wagyu-roast.jpg' },
+  { id: 'veggie-turkey', name: 'Veggie Turkey', isWagyu: false, image: '/menu/sandwiches/veggie-turkey.jpg' },
+  { id: 'veggie-cole', name: 'Veggie Cole Turkey®', isWagyu: false, image: '/menu/sandwiches/veggie-cole.jpg' },
+  { id: 'homemade-turkey', name: 'Homemade Turkey Sub', isWagyu: false, image: '/menu/sandwiches/homemade-turkey.jpg' },
+  { id: 'italian-sub', name: 'Italian Sub', isWagyu: false, image: '/menu/sandwiches/italian-sub.jpg' },
+  { id: 'tuna-sub', name: 'Tuna Sub', isWagyu: false, image: '/menu/sandwiches/tuna-sub.jpg' },
+  { id: 'blt', name: 'The BLT', isWagyu: false, image: '/menu/sandwiches/blt.jpg' },
+  { id: 'cheese-sub', name: 'Cheese Sub', isWagyu: false, image: '/menu/sandwiches/cheese-sub.jpg' },
+  { id: 'prosciuttini', name: 'Prosciuttini', isWagyu: false, image: '/menu/sandwiches/prosciuttini.jpg' },
+  { id: 'classic-club', name: 'Classic Club', isWagyu: false, image: '/menu/sandwiches/classic-club.jpg' },
+  { id: 'wagyu-club', name: 'Wagyu Club', isWagyu: true, image: '/menu/sandwiches/wagyu-club.jpg' }
 ];
 
 // Restaurant menu data
@@ -324,8 +324,8 @@ export default function OrderPage() {
 
     const wagyuCount = selectedSandwiches.reduce((count, item) => {
       const sandwich = capriottisIndividualSandwiches.find(s => s.id === item.id);
-      // Only count items that specifically contain "wagyu" in the name
-      return sandwich?.name.toLowerCase().includes('wagyu') ? count + item.count : count;
+      // Only count Wagyu sandwiches
+      return sandwich?.isWagyu ? count + item.count : count;
     }, 0);
 
     return basePrice + (wagyuCount * wagyuUpcharge);
@@ -1889,9 +1889,11 @@ export default function OrderPage() {
                             <h4 className="font-semibold text-sm" style={{ color: 'rgb(15, 15, 15)' }}>
                               {sandwich.name}
                             </h4>
-                            <p className="text-sm font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
-                              ${sandwich.price}
-                            </p>
+                            {sandwich.isWagyu && (
+                              <p className="text-sm font-bold text-red-600">
+                                +$7.29 Wagyu
+                              </p>
+                            )}
                           </div>
 
                           {/* Selection Controls */}
