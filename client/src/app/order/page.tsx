@@ -17,7 +17,27 @@ type MenuItem = {
   category: 'main' | 'dessert' | 'beverage';
   dietaryInfo: string[];
   image: string;
+  isCustomizable?: boolean;
+  pricing?: { small: number; large: number };
 };
+
+// Individual sandwich options for sampler plate
+const capriottisIndividualSandwiches = [
+  { id: 'bobbie', name: 'The Bobbie®', price: 6.29, image: '/menu/sandwiches/bobbie.jpg' },
+  { id: 'cole-turkey', name: 'Cole Turkey®', price: 6.29, image: '/menu/sandwiches/cole-turkey.jpg' },
+  { id: 'wagyu-slaw', name: 'American Wagyu Slaw Be Jo®', price: 6.29, image: '/menu/sandwiches/wagyu-slaw.jpg' },
+  { id: 'wagyu-roast', name: 'American Wagyu Roast Beef', price: 6.29, image: '/menu/sandwiches/wagyu-roast.jpg' },
+  { id: 'veggie-turkey', name: 'Veggie Turkey', price: 6.29, image: '/menu/sandwiches/veggie-turkey.jpg' },
+  { id: 'veggie-cole', name: 'Veggie Cole Turkey®', price: 6.29, image: '/menu/sandwiches/veggie-cole.jpg' },
+  { id: 'homemade-turkey', name: 'Homemade Turkey Sub', price: 6.29, image: '/menu/sandwiches/homemade-turkey.jpg' },
+  { id: 'italian-sub', name: 'Italian Sub', price: 6.29, image: '/menu/sandwiches/italian-sub.jpg' },
+  { id: 'tuna-sub', name: 'Tuna Sub', price: 6.29, image: '/menu/sandwiches/tuna-sub.jpg' },
+  { id: 'blt', name: 'The BLT', price: 6.29, image: '/menu/sandwiches/blt.jpg' },
+  { id: 'cheese-sub', name: 'Cheese Sub', price: 6.29, image: '/menu/sandwiches/cheese-sub.jpg' },
+  { id: 'prosciuttini', name: 'Prosciuttini', price: 6.29, image: '/menu/sandwiches/prosciuttini.jpg' },
+  { id: 'classic-club', name: 'Classic Club', price: 6.29, image: '/menu/sandwiches/classic-club.jpg' },
+  { id: 'wagyu-club', name: 'Wagyu Club', price: 6.29, image: '/menu/sandwiches/wagyu-club.jpg' }
+];
 
 // Restaurant menu data
 const restaurantMenus = {
@@ -27,65 +47,108 @@ const restaurantMenus = {
       {
         id: 'cap1',
         name: 'The Bobbie® Party Tray',
-        description: 'Our famous Bobbie sandwich cut into party portions. Serves 10-12 people.',
-        price: 89.99,
+        description: 'A tray loaded with the greatest sandwich in America. Homemade turkey, cranberry sauce, stuffing and mayo.',
+        price: 0, // Price will be shown in size selection modal
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/Capriottis-Bobbie-Tray.webp'
+        image: '/menu/Capriottis-Bobbie-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 71.99, large: 93.99 }
       },
       {
         id: 'cap2',
         name: 'Little Italy Party Tray',
-        description: 'Classic Italian sub with premium meats and cheese, cut for sharing. Serves 10-12 people.',
-        price: 84.99,
+        description: 'Paying homage to our heritage, this tray is loaded with nothing but tasty Italian subs (served with a side of pickles, hot and sweet peppers).',
+        price: 0,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/Capriottis-Little-Italy-Tray.webp'
+        image: '/menu/Capriottis-Little-Italy-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 71.99, large: 93.99 }
       },
       {
         id: 'cap3',
         name: 'Delaware\'s Finest Party Tray',
-        description: 'Premium turkey and cheese with fresh vegetables. Serves 10-12 people.',
-        price: 87.99,
+        description: 'An assortment of our Cap\'s classics: The Bobbie®, Slaw Be Jo®, and the Italian sub (served with pickles, hot and sweet peppers).',
+        price: 0,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/Capriottis-DelawaresFinest-Tray.webp'
+        image: '/menu/Capriottis-DelawaresFinest-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 71.99, large: 93.99 }
       },
       {
         id: 'cap4',
         name: 'Turkey Lovers Party Tray',
-        description: 'Fresh roasted turkey with premium fixings. Serves 10-12 people.',
-        price: 82.99,
+        description: 'Assortment of our delicious oven-roasted turkey subs: The Bobbie®, Cole Turkey®, and the Homemade Turkey sub (served with a side of mayo, mustard, pickles and peppers).',
+        price: 0,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/Capriottis-Turkey-Lovers-Tray.webp'
+        image: '/menu/Capriottis-Turkey-Lovers-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 71.99, large: 93.99 }
       },
       {
         id: 'cap5',
         name: 'Vegetarian Party Tray',
-        description: 'Fresh vegetables with cheese and Italian dressing. Serves 10-12 people.',
-        price: 74.99,
+        description: 'Assortment of our delicious vegetarian subs made with meatless products and veggies: Veggie Turkey, Veggie Cole Turkey®, and Cheese sub.',
+        price: 0,
         category: 'main' as const,
         dietaryInfo: ['vegetarian'],
-        image: '/menu/Capriottis-Vegetarian-Tray.webp'
+        image: '/menu/Capriottis-Vegetarian-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 71.99, large: 93.49 }
       },
       {
         id: 'cap6',
-        name: 'Wagyu Cheese Steak Party Tray',
-        description: 'Premium Wagyu beef cheese steak with grilled onions and peppers. Serves 10-12 people.',
-        price: 109.99,
+        name: 'American Wagyu Party Tray',
+        description: 'A tray of our finest American Wagyu beef subs: The American Wagyu Slaw Be Jo® and the American Wagyu Roast Beef.',
+        price: 0,
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/Capriottis-Waygu-Tray.webp'
+        image: '/menu/Capriottis-Waygu-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 80.99, large: 101.99 }
       },
       {
         id: 'cap7',
-        name: 'Assorted Cookie Tray',
+        name: 'The Club Party Tray',
+        description: 'Classic club sandwich with turkey, ham, and bacon.',
+        price: 0,
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/Capriottis-Club-Tray.webp',
+        isCustomizable: true,
+        pricing: { small: 81.59, large: 103.29 }
+      },
+
+      {
+        id: 'cap-sampler',
+        name: 'Sampler Plate',
+        description: 'Choose your own combination of our signature sandwiches. Perfect for trying multiple favorites!',
+        price: 73.99, // Base price for small (Build Your Own pricing)
+        category: 'main' as const,
+        dietaryInfo: [],
+        image: '/menu/Capriottis-Bobbie-Tray.webp', // Placeholder until you provide sampler image
+        isCustomizable: true
+      },
+      {
+        id: 'cap-cookie-tray',
+        name: 'Cookie Tray',
         description: 'Fresh baked cookies - chocolate chip, oatmeal raisin, and sugar cookies.',
+        price: 21.99,
+        category: 'dessert' as const,
+        dietaryInfo: [],
+        image: '/menu/Capriottis-cookie-tray.webp'
+      },
+      {
+        id: 'cap-cookie-brookie-tray',
+        name: 'Cookie/Brookie Tray',
+        description: 'Delicious combination of cookies and brownies for the perfect sweet treat.',
         price: 24.99,
         category: 'dessert' as const,
-        dietaryInfo: ['vegetarian'],
-        image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=300&fit=crop&crop=center'
+        dietaryInfo: [],
+        image: '/menu/Capriottis-Cookie-brookie-Tray.webp'
       },
       {
         id: 'cap8',
@@ -241,6 +304,32 @@ export default function OrderPage() {
   // Time picker state
   const [showTimePicker, setShowTimePicker] = useState(false);
   const timePickerRef = useRef<HTMLDivElement>(null);
+
+  // Sampler plate state
+  const [showSamplerModal, setShowSamplerModal] = useState(false);
+  const [samplerSize, setSamplerSize] = useState<'small' | 'large'>('small');
+  const [selectedSandwiches, setSelectedSandwiches] = useState<{id: string, count: number}[]>([]);
+  const samplerModalRef = useRef<HTMLDivElement>(null);
+
+  // Tray size selection state
+  const [showTrayModal, setShowTrayModal] = useState(false);
+  const [selectedTray, setSelectedTray] = useState<any>(null);
+  const [trayQuantities, setTrayQuantities] = useState<{small: number, large: number}>({small: 0, large: 0});
+  const trayModalRef = useRef<HTMLDivElement>(null);
+
+  // Calculate sampler price with Wagyu upcharges
+  const calculateSamplerPrice = () => {
+    const basePrice = samplerSize === 'small' ? 73.99 : 97.99;
+    const wagyuUpcharge = 7.29;
+
+    const wagyuCount = selectedSandwiches.reduce((count, item) => {
+      const sandwich = capriottisIndividualSandwiches.find(s => s.id === item.id);
+      // Only count items that specifically contain "wagyu" in the name
+      return sandwich?.name.toLowerCase().includes('wagyu') ? count + item.count : count;
+    }, 0);
+
+    return basePrice + (wagyuCount * wagyuUpcharge);
+  };
 
   // Handle form submission (proceed to payment)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -417,6 +506,31 @@ export default function OrderPage() {
         name: menuItem.name,
         description: menuItem.description,
         quantity: 1,
+        price: menuItem.price,
+        category: menuItem.category,
+        dietaryInfo: menuItem.dietaryInfo as any
+      }]);
+    }
+  };
+
+  // Add item to cart with specific quantity
+  const addToCartWithQuantity = (menuItem: typeof currentMenu[0], quantity: number) => {
+    if (quantity <= 0) return;
+
+    const existingItem = cart.find(item => item.id === menuItem.id);
+
+    if (existingItem) {
+      setCart(cart.map(item =>
+        item.id === menuItem.id
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      ));
+    } else {
+      setCart([...cart, {
+        id: menuItem.id,
+        name: menuItem.name,
+        description: menuItem.description,
+        quantity: quantity,
         price: menuItem.price,
         category: menuItem.category,
         dietaryInfo: menuItem.dietaryInfo as any
@@ -700,7 +814,7 @@ export default function OrderPage() {
                     <motion.div
                       key={item.id}
                       whileHover={{ scale: 1.03, y: -5 }}
-                      className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                      className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full"
                       style={{
                         backgroundColor: 'rgb(255, 255, 255)',
                         border: '2px solid rgb(113, 113, 122)'
@@ -720,18 +834,20 @@ export default function OrderPage() {
                         </div>
                       )}
 
-                      <div className="p-6">
+                      <div className="p-6 flex flex-col flex-grow">
                         <div className="flex justify-between items-start mb-3">
                           <h4 className="text-xl font-bold transition-colors duration-200" style={{
                             color: 'rgb(15, 15, 15)'
                           }}>
                             {item.name}
                           </h4>
-                          <div className="text-right">
-                            <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
-                          </div>
+                          {!('isCustomizable' in item && item.isCustomizable) && (
+                            <div className="text-right">
+                              <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
+                            </div>
+                          )}
                         </div>
-                        <p className="mb-4 leading-relaxed" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
+                        <p className="mb-4 leading-relaxed flex-grow" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
 
                         {/* Dietary Info */}
                         {item.dietaryInfo.length > 0 && (
@@ -745,7 +861,7 @@ export default function OrderPage() {
                         )}
 
                         {/* Add to Cart Button */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-auto">
                           {cart.find(cartItem => cartItem.id === item.id) ? (
                             <div className="flex items-center gap-3 rounded-xl p-2" style={{ backgroundColor: 'rgb(255, 255, 255)', border: '1px solid rgb(113, 113, 122)' }}>
                               <button
@@ -761,7 +877,17 @@ export default function OrderPage() {
                                 {cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}
                               </span>
                               <button
-                                onClick={() => addToCart(item)}
+                                onClick={() => {
+                                  if (item.id === 'cap-sampler') {
+                                    setShowSamplerModal(true);
+                                  } else if ('isCustomizable' in item && item.isCustomizable && 'pricing' in item && item.pricing) {
+                                    setSelectedTray(item);
+                                    setTrayQuantities({small: 0, large: 0}); // Reset quantities
+                                    setShowTrayModal(true);
+                                  } else {
+                                    addToCart(item);
+                                  }
+                                }}
                                 className="w-10 h-10 text-white rounded-lg transition-all duration-200 flex items-center justify-center hover:scale-105"
                                 style={{ backgroundColor: 'rgb(15, 15, 15)' }}
                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
@@ -772,7 +898,17 @@ export default function OrderPage() {
                             </div>
                           ) : (
                             <button
-                              onClick={() => addToCart(item)}
+                              onClick={() => {
+                                if (item.id === 'cap-sampler') {
+                                  setShowSamplerModal(true);
+                                } else if ('isCustomizable' in item && item.isCustomizable && 'pricing' in item && item.pricing) {
+                                  setSelectedTray(item);
+                                  setTrayQuantities({small: 0, large: 0}); // Reset quantities
+                                  setShowTrayModal(true);
+                                } else {
+                                  addToCart(item);
+                                }
+                              }}
                               className="w-full text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-lg hover:scale-105 hover:shadow-lg"
                               style={{ backgroundColor: 'rgb(15, 15, 15)' }}
                               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
@@ -806,7 +942,7 @@ export default function OrderPage() {
                       <motion.div
                         key={item.id}
                         whileHover={{ scale: 1.03, y: -5 }}
-                        className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                        className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full"
                         style={{
                           backgroundColor: 'rgb(255, 255, 255)',
                           border: '2px solid rgb(113, 113, 122)'
@@ -817,7 +953,9 @@ export default function OrderPage() {
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ${
+                                item.id === 'cap-cookie-brookie-tray' ? 'object-[center_70%]' : ''
+                              }`}
                               onError={(e) => {
                                 e.currentTarget.style.display = 'none';
                               }}
@@ -826,18 +964,20 @@ export default function OrderPage() {
                           </div>
                         )}
 
-                        <div className="p-6">
+                        <div className="p-6 flex flex-col flex-grow">
                           <div className="flex justify-between items-start mb-3">
                             <h4 className="text-xl font-bold transition-colors duration-200" style={{
                               color: 'rgb(15, 15, 15)'
                             }}>
                               {item.name}
                             </h4>
-                            <div className="text-right">
-                              <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
-                            </div>
+                            {!('isCustomizable' in item && item.isCustomizable) && (
+                              <div className="text-right">
+                                <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
+                              </div>
+                            )}
                           </div>
-                          <p className="mb-4 leading-relaxed" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
+                          <p className="mb-4 leading-relaxed flex-grow" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
 
                           {/* Dietary Info */}
                           {item.dietaryInfo.length > 0 && (
@@ -851,7 +991,7 @@ export default function OrderPage() {
                           )}
 
                           {/* Add to Cart Button */}
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between mt-auto">
                             {cart.find(cartItem => cartItem.id === item.id) ? (
                               <div className="flex items-center gap-3 rounded-xl p-2" style={{ backgroundColor: 'rgb(255, 255, 255)', border: '1px solid rgb(113, 113, 122)' }}>
                                 <button
@@ -913,7 +1053,7 @@ export default function OrderPage() {
                       <motion.div
                         key={item.id}
                         whileHover={{ scale: 1.03, y: -5 }}
-                        className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                        className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full"
                         style={{
                           backgroundColor: 'rgb(255, 255, 255)',
                           border: '2px solid rgb(113, 113, 122)'
@@ -933,18 +1073,20 @@ export default function OrderPage() {
                           </div>
                         )}
 
-                        <div className="p-6">
+                        <div className="p-6 flex flex-col flex-grow">
                           <div className="flex justify-between items-start mb-3">
                             <h4 className="text-xl font-bold transition-colors duration-200" style={{
                               color: 'rgb(15, 15, 15)'
                             }}>
                               {item.name}
                             </h4>
-                            <div className="text-right">
-                              <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
-                            </div>
+                            {!('isCustomizable' in item && item.isCustomizable) && (
+                              <div className="text-right">
+                                <span className="text-2xl font-bold" style={{ color: 'rgb(113, 113, 122)' }}>${item.price.toFixed(2)}</span>
+                              </div>
+                            )}
                           </div>
-                          <p className="mb-4 leading-relaxed" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
+                          <p className="mb-4 leading-relaxed flex-grow" style={{ color: 'rgb(15, 15, 15)' }}>{item.description}</p>
 
                           {/* Dietary Info */}
                           {item.dietaryInfo.length > 0 && (
@@ -958,7 +1100,7 @@ export default function OrderPage() {
                           )}
 
                           {/* Add to Cart Button */}
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between mt-auto">
                             {cart.find(cartItem => cartItem.id === item.id) ? (
                               <div className="flex items-center gap-3 rounded-xl p-2" style={{ backgroundColor: 'rgb(255, 255, 255)', border: '1px solid rgb(113, 113, 122)' }}>
                                 <button
@@ -1447,6 +1589,448 @@ export default function OrderPage() {
                     View Schedule
                   </button>
                 </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Tray Size Selection Modal */}
+        {showTrayModal && selectedTray && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
+            <motion.div
+              ref={trayModalRef}
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full pointer-events-auto border-2 border-gray-200"
+            >
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                    Select Size
+                  </h2>
+                  <button
+                    onClick={() => setShowTrayModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Item Name */}
+                <h3 className="text-lg font-semibold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                  {selectedTray.name}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm mb-6" style={{ color: 'rgb(113, 113, 122)' }}>
+                  {selectedTray.description}
+                </p>
+
+                {/* Size Selection with Quantity */}
+                <div className="space-y-4">
+                  {/* Small Size */}
+                  <div className="border-2 border-gray-200 p-4 rounded-xl">
+                    <div className="flex justify-between items-center mb-3">
+                      <div>
+                        <h4 className="font-semibold text-lg" style={{ color: 'rgb(15, 15, 15)' }}>
+                          Small
+                        </h4>
+                        <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                          Serves 8-10 people
+                        </p>
+                      </div>
+                      <p className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                        ${selectedTray.pricing?.small.toFixed(2)}
+                      </p>
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => setTrayQuantities(prev => ({
+                          ...prev,
+                          small: Math.max(0, prev.small - 1)
+                        }))}
+                        className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                      >
+                        -
+                      </button>
+                      <span className="text-lg font-bold min-w-[2rem] text-center" style={{ color: 'rgb(15, 15, 15)' }}>
+                        {trayQuantities.small}
+                      </span>
+                      <button
+                        onClick={() => setTrayQuantities(prev => ({
+                          ...prev,
+                          small: prev.small + 1
+                        }))}
+                        className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Large Size */}
+                  <div className="border-2 border-gray-200 p-4 rounded-xl">
+                    <div className="flex justify-between items-center mb-3">
+                      <div>
+                        <h4 className="font-semibold text-lg" style={{ color: 'rgb(15, 15, 15)' }}>
+                          Large
+                        </h4>
+                        <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                          Serves 11-13 people
+                        </p>
+                      </div>
+                      <p className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                        ${selectedTray.pricing?.large.toFixed(2)}
+                      </p>
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => setTrayQuantities(prev => ({
+                          ...prev,
+                          large: Math.max(0, prev.large - 1)
+                        }))}
+                        className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                      >
+                        -
+                      </button>
+                      <span className="text-lg font-bold min-w-[2rem] text-center" style={{ color: 'rgb(15, 15, 15)' }}>
+                        {trayQuantities.large}
+                      </span>
+                      <button
+                        onClick={() => setTrayQuantities(prev => ({
+                          ...prev,
+                          large: prev.large + 1
+                        }))}
+                        className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Add to Cart Button */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                      Total: ${((trayQuantities.small * selectedTray.pricing?.small) + (trayQuantities.large * selectedTray.pricing?.large)).toFixed(2)}
+                    </span>
+                    <span className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                      {trayQuantities.small + trayQuantities.large} item(s)
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      // Add small items to cart
+                      if (trayQuantities.small > 0) {
+                        const smallItem = {
+                          ...selectedTray,
+                          id: `${selectedTray.id}-small-${Date.now()}`,
+                          name: `${selectedTray.name} (Small)`,
+                          description: `${selectedTray.description} Serves 8-10 people.`,
+                          price: selectedTray.pricing.small
+                        };
+                        addToCartWithQuantity(smallItem, trayQuantities.small);
+                      }
+
+                      // Add large items to cart
+                      if (trayQuantities.large > 0) {
+                        const largeItem = {
+                          ...selectedTray,
+                          id: `${selectedTray.id}-large-${Date.now()}`,
+                          name: `${selectedTray.name} (Large)`,
+                          description: `${selectedTray.description} Serves 11-13 people.`,
+                          price: selectedTray.pricing.large
+                        };
+                        addToCartWithQuantity(largeItem, trayQuantities.large);
+                      }
+
+                      // Reset and close modal
+                      setTrayQuantities({small: 0, large: 0});
+                      setShowTrayModal(false);
+                    }}
+                    disabled={trayQuantities.small + trayQuantities.large === 0}
+                    className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
+                      trayQuantities.small + trayQuantities.large > 0
+                        ? 'bg-black hover:bg-gray-800'
+                        : 'bg-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Sampler Plate Modal */}
+        {showSamplerModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              ref={samplerModalRef}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                    Customize Your Sampler Plate
+                  </h2>
+                  <button
+                    onClick={() => setShowSamplerModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Size Selection */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: 'rgb(15, 15, 15)' }}>
+                    Select Size <span className="text-red-500">Required</span>
+                  </h3>
+                  <p className="text-sm mb-4" style={{ color: 'rgb(113, 113, 122)' }}>Select 1 option</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div
+                      onClick={() => {
+                        setSamplerSize('small');
+                        setSelectedSandwiches([]); // Clear selections when changing size
+                      }}
+                      className={`border-2 p-4 rounded-lg cursor-pointer transition-all ${
+                        samplerSize === 'small' ? 'border-red-500 bg-red-50' : 'border-gray-200'
+                      }`}
+                    >
+                      <h4 className="font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Small - 3 Subs (8-10 people)
+                      </h4>
+                      <p className="text-lg font-bold" style={{ color: 'rgb(15, 15, 15)' }}>$73.99</p>
+                    </div>
+
+                    <div
+                      onClick={() => {
+                        setSamplerSize('large');
+                        setSelectedSandwiches([]); // Clear selections when changing size
+                      }}
+                      className={`border-2 p-4 rounded-lg cursor-pointer transition-all ${
+                        samplerSize === 'large' ? 'border-red-500 bg-red-50' : 'border-gray-200'
+                      }`}
+                    >
+                      <h4 className="font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Large - 4 Subs (11-13 people)
+                      </h4>
+                      <p className="text-lg font-bold" style={{ color: 'rgb(15, 15, 15)' }}>$97.99</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sandwich Selection */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3" style={{ color: 'rgb(15, 15, 15)' }}>
+                    {selectedSandwiches.reduce((sum, item) => sum + item.count, 0) < (samplerSize === 'small' ? 3 : 4)
+                      ? `Select Sandwiches (${selectedSandwiches.reduce((sum, item) => sum + item.count, 0)}/${samplerSize === 'small' ? 3 : 4})`
+                      : 'All Subs Selected'} <span className="text-red-500">Required</span>
+                  </h3>
+                  <p className="text-sm mb-4" style={{ color: 'rgb(113, 113, 122)' }}>
+                    Click to add sandwiches. You can select the same sandwich multiple times.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {capriottisIndividualSandwiches.map((sandwich) => {
+                      const selectedItem = selectedSandwiches.find(item => item.id === sandwich.id);
+                      const totalSelected = selectedSandwiches.reduce((sum, item) => sum + item.count, 0);
+                      const maxSandwiches = samplerSize === 'small' ? 3 : 4;
+                      const isSelected = !!selectedItem;
+                      const canAddMore = totalSelected < maxSandwiches;
+
+                      return (
+                        <div
+                          key={sandwich.id}
+                          className={`border-2 p-3 rounded-lg transition-all relative ${
+                            isSelected
+                              ? 'border-red-500 bg-red-50'
+                              : canAddMore
+                              ? 'border-gray-200 hover:border-gray-300 cursor-pointer'
+                              : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-50'
+                          }`}
+                        >
+                          <div
+                            onClick={() => {
+                              if (canAddMore) {
+                                if (selectedItem) {
+                                  // Increase count
+                                  setSelectedSandwiches(selectedSandwiches.map(item =>
+                                    item.id === sandwich.id
+                                      ? { ...item, count: item.count + 1 }
+                                      : item
+                                  ));
+                                } else {
+                                  // Add new item
+                                  setSelectedSandwiches([...selectedSandwiches, { id: sandwich.id, count: 1 }]);
+                                }
+                              }
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <img
+                              src={sandwich.image}
+                              alt={sandwich.name}
+                              className="w-full h-20 object-cover rounded-lg mb-2"
+                            />
+                            <h4 className="font-semibold text-sm" style={{ color: 'rgb(15, 15, 15)' }}>
+                              {sandwich.name}
+                            </h4>
+                            <p className="text-sm font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                              ${sandwich.price}
+                            </p>
+                          </div>
+
+                          {/* Selection Controls */}
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-white rounded-full px-2 py-1 shadow-md">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (selectedItem!.count > 1) {
+                                    setSelectedSandwiches(selectedSandwiches.map(item =>
+                                      item.id === sandwich.id
+                                        ? { ...item, count: item.count - 1 }
+                                        : item
+                                    ));
+                                  } else {
+                                    setSelectedSandwiches(selectedSandwiches.filter(item => item.id !== sandwich.id));
+                                  }
+                                }}
+                                className="w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                              >
+                                -
+                              </button>
+                              <span className="text-sm font-bold min-w-[1rem] text-center">
+                                {selectedItem!.count}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (canAddMore) {
+                                    setSelectedSandwiches(selectedSandwiches.map(item =>
+                                      item.id === sandwich.id
+                                        ? { ...item, count: item.count + 1 }
+                                        : item
+                                    ));
+                                  }
+                                }}
+                                disabled={!canAddMore}
+                                className={`w-6 h-6 rounded-full text-xs flex items-center justify-center ${
+                                  canAddMore
+                                    ? 'bg-green-500 text-white hover:bg-green-600'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                              >
+                                +
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected Sandwiches Summary */}
+                {selectedSandwiches.length > 0 && (
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                      Selected Sandwiches ({selectedSandwiches.reduce((sum, item) => sum + item.count, 0)}/{samplerSize === 'small' ? 3 : 4}):
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedSandwiches.map((selectedItem) => {
+                        const sandwich = capriottisIndividualSandwiches.find(s => s.id === selectedItem.id);
+                        return (
+                          <span
+                            key={selectedItem.id}
+                            className="bg-white px-3 py-1 rounded-full text-sm border flex items-center gap-2"
+                          >
+                            {sandwich?.name} {selectedItem.count > 1 && `(×${selectedItem.count})`}
+                            <button
+                              onClick={() => setSelectedSandwiches(selectedSandwiches.filter(item => item.id !== selectedItem.id))}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add to Cart Button */}
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="text-right">
+                    <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                      {(samplerSize === 'small' ? 3400 : 9320)} Cals | Qty: 1
+                    </p>
+                    <p className="text-lg font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                      ${calculateSamplerPrice().toFixed(2)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const maxSandwiches = samplerSize === 'small' ? 3 : 4;
+                      const totalSelected = selectedSandwiches.reduce((sum, item) => sum + item.count, 0);
+                      if (totalSelected === maxSandwiches) {
+                        // Create description with quantities
+                        const sandwichDescriptions = selectedSandwiches.map(item => {
+                          const sandwich = capriottisIndividualSandwiches.find(s => s.id === item.id);
+                          return item.count > 1
+                            ? `${item.count}× ${sandwich?.name || ''}`
+                            : sandwich?.name || '';
+                        });
+
+                        const finalPrice = calculateSamplerPrice();
+                        const samplerItem = {
+                          id: `cap-sampler-${Date.now()}`,
+                          name: `Sampler Plate (${samplerSize === 'small' ? 'Small' : 'Large'})`,
+                          description: `Custom sampler with ${sandwichDescriptions.join(', ')}`,
+                          price: finalPrice,
+                          category: 'main' as const,
+                          dietaryInfo: [],
+                          image: '/menu/Capriottis-Bobbie-Tray.webp',
+                          restaurant: 'capriottis',
+                          customization: {
+                            size: samplerSize,
+                            sandwiches: selectedSandwiches.map(item => ({
+                              name: capriottisIndividualSandwiches.find(s => s.id === item.id)?.name || '',
+                              count: item.count
+                            }))
+                          }
+                        };
+                        addToCart(samplerItem);
+                        setShowSamplerModal(false);
+                        setSelectedSandwiches([]);
+                        setSamplerSize('small');
+                      }
+                    }}
+                    disabled={selectedSandwiches.reduce((sum, item) => sum + item.count, 0) !== (samplerSize === 'small' ? 3 : 4)}
+                    className={`px-8 py-3 rounded-xl font-semibold text-white transition-all ${
+                      selectedSandwiches.reduce((sum, item) => sum + item.count, 0) === (samplerSize === 'small' ? 3 : 4)
+                        ? 'bg-black hover:bg-gray-800'
+                        : 'bg-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
