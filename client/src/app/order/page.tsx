@@ -23,20 +23,19 @@ type MenuItem = {
 
 // Individual sandwich options for sampler plate
 const capriottisIndividualSandwiches = [
-  { id: 'bobbie', name: 'The Bobbie®', isWagyu: false, image: '/menu/sandwiches/bobbie.jpg' },
-  { id: 'cole-turkey', name: 'Cole Turkey®', isWagyu: false, image: '/menu/sandwiches/cole-turkey.jpg' },
-  { id: 'wagyu-slaw', name: 'American Wagyu Slaw Be Jo®', isWagyu: true, image: '/menu/sandwiches/wagyu-slaw.jpg' },
-  { id: 'wagyu-roast', name: 'American Wagyu Roast Beef', isWagyu: true, image: '/menu/sandwiches/wagyu-roast.jpg' },
-  { id: 'veggie-turkey', name: 'Veggie Turkey', isWagyu: false, image: '/menu/sandwiches/veggie-turkey.jpg' },
-  { id: 'veggie-cole', name: 'Veggie Cole Turkey®', isWagyu: false, image: '/menu/sandwiches/veggie-cole.jpg' },
-  { id: 'homemade-turkey', name: 'Homemade Turkey Sub', isWagyu: false, image: '/menu/sandwiches/homemade-turkey.jpg' },
-  { id: 'italian-sub', name: 'Italian Sub', isWagyu: false, image: '/menu/sandwiches/italian-sub.jpg' },
-  { id: 'tuna-sub', name: 'Tuna Sub', isWagyu: false, image: '/menu/sandwiches/tuna-sub.jpg' },
-  { id: 'blt', name: 'The BLT', isWagyu: false, image: '/menu/sandwiches/blt.jpg' },
-  { id: 'cheese-sub', name: 'Cheese Sub', isWagyu: false, image: '/menu/sandwiches/cheese-sub.jpg' },
-  { id: 'prosciuttini', name: 'Prosciuttini', isWagyu: false, image: '/menu/sandwiches/prosciuttini.jpg' },
-  { id: 'classic-club', name: 'Classic Club', isWagyu: false, image: '/menu/sandwiches/classic-club.jpg' },
-  { id: 'wagyu-club', name: 'Wagyu Club', isWagyu: true, image: '/menu/sandwiches/wagyu-club.jpg' }
+  { id: 'bobbie', name: 'The Bobbie®', isWagyu: false, image: '/menu/sandwiches/Bobbie-sand.webp' },
+  { id: 'cole-turkey', name: 'Cole Turkey®', isWagyu: false, image: '/menu/sandwiches/cole-turkey.webp' },
+  { id: 'wagyu-slaw', name: 'American Wagyu Slaw Be Jo®', isWagyu: true, image: '/menu/sandwiches/american-waygu-slaw-sand.webp' },
+  { id: 'wagyu-roast', name: 'American Wagyu Roast Beef', isWagyu: true, image: '/menu/sandwiches/american-waygu-club-sand.webp' },
+  { id: 'veggie-turkey', name: 'Veggie Turkey', isWagyu: false, image: '/menu/sandwiches/plant-based-turkey-sand.webp' },
+  { id: 'veggie-cole', name: 'Veggie Cole Turkey®', isWagyu: false, image: '/menu/sandwiches/plant-based-cole-sand.webp' },
+  { id: 'homemade-turkey', name: 'Homemade Turkey Sub', isWagyu: false, image: '/menu/sandwiches/home-made-turkey.webp' },
+  { id: 'italian-sub', name: 'Italian Sub', isWagyu: false, image: '/menu/sandwiches/italian-sand.webp' },
+  { id: 'tuna-sub', name: 'Tuna Sub', isWagyu: false, image: '/menu/sandwiches/tuna-sand.webp' },
+  { id: 'blt', name: 'The BLT', isWagyu: false, image: '/menu/sandwiches/blt-sand.webp' },
+  { id: 'cheese-sub', name: 'Cheese Sub', isWagyu: false, image: '/menu/sandwiches/soda-bottles.webp' },
+  { id: 'classic-club', name: 'Classic Club', isWagyu: false, image: '/menu/sandwiches/classic-club.webp' },
+  { id: 'wagyu-club', name: 'Wagyu Club', isWagyu: true, image: '/menu/sandwiches/american-waygu-club-sand.webp' }
 ];
 
 // Restaurant menu data
@@ -1772,12 +1771,12 @@ export default function OrderPage() {
 
         {/* Sampler Plate Modal */}
         {showSamplerModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
             <motion.div
               ref={samplerModalRef}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto border-2 border-gray-200"
             >
               <div className="p-6">
                 {/* Header */}
