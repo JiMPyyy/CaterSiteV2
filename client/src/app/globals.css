@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Force consistent scrollbar behavior across all pages */
+html {
+  overflow-y: scroll;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

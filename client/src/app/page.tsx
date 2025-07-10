@@ -51,7 +51,7 @@ export default function Home() {
 
         {/* features */}
         <section className="container mx-auto py-16">
-          <h2 className="mb-12 text-center text-3xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>Why CaterVegas?</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>Why CaterLV?</h2>
 
           <div className="grid gap-8 sm:grid-cols-3">
             <Feature icon={ShoppingCart} title="Easy Ordering"
@@ -70,7 +70,7 @@ export default function Home() {
         backgroundColor: 'rgb(255, 255, 255)'
       }}>
         <div className="container mx-auto px-4 py-6 text-center text-sm" style={{ color: 'rgb(15, 15, 15)' }}>
-          © {new Date().getFullYear()} CaterVegas. All rights reserved.
+          © {new Date().getFullYear()} CaterLV. All rights reserved.
         </div>
       </footer>
     </div>

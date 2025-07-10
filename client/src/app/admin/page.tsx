@@ -65,10 +65,13 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated || user?.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen flex-col font-sans items-center justify-center" style={{
+        color: 'rgb(15, 15, 15)',
+        backgroundColor: 'rgb(255, 255, 255)'
+      }}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You don't have permission to access this page.</p>
+          <h1 className="text-2xl font-bold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>Access Denied</h1>
+          <p style={{ color: 'rgb(113, 113, 122)' }}>You don't have permission to access this page.</p>
         </div>
       </div>
     );
@@ -76,10 +79,13 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="flex min-h-screen flex-col font-sans" style={{
+        color: 'rgb(15, 15, 15)',
+        backgroundColor: 'rgb(255, 255, 255)'
+      }}>
         <Navigation />
         <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: 'rgb(15, 15, 15)' }}></div>
         </div>
       </div>
     );
@@ -111,14 +117,17 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen flex-col font-sans" style={{
+      color: 'rgb(15, 15, 15)',
+      backgroundColor: 'rgb(255, 255, 255)'
+    }}>
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage orders, users, and monitor system performance</p>
+          <h1 className="text-3xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>Admin Dashboard</h1>
+          <p className="mt-2" style={{ color: 'rgb(113, 113, 122)' }}>Manage orders, users, and monitor system performance</p>
         </div>
 
         {/* Navigation Tabs */}
@@ -134,9 +143,13 @@ export default function AdminDashboard() {
                 onClick={() => setActiveTab(id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
                   activeTab === id
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    ? 'text-white'
+                    : 'hover:bg-gray-100'
                 }`}
+                style={{
+                  backgroundColor: activeTab === id ? 'rgb(15, 15, 15)' : 'transparent',
+                  color: activeTab === id ? 'rgb(255, 255, 255)' : 'rgb(113, 113, 122)'
+                }}
               >
                 <Icon size={20} />
                 {label}

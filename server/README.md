@@ -1,6 +1,6 @@
-# CaterVegas Backend API
+# CaterLV Backend API
 
-This is the Express.js backend API server for CaterVegas, providing authentication, order management, and scheduling functionality.
+This is the Express.js backend API server for CaterLV, providing authentication, order management, and scheduling functionality.
 
 ## Getting Started
 

@@ -1,6 +1,6 @@
-# CaterVegas Frontend
+# CaterLV Frontend
 
-This is the Next.js frontend application for CaterVegas.
+This is the Next.js frontend application for CaterLV.
 
 ## Getting Started
 

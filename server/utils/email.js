@@ -32,7 +32,7 @@ const sendEmail = async (to, subject, html, text = null) => {
     const transporter = createTransporter();
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'CaterVegas <noreply@catervegas.com>',
+      from: process.env.EMAIL_FROM || 'CaterLV <noreply@caterlv.com>',
       to,
       subject,
       html,
@@ -80,7 +80,7 @@ const emailTemplates = {
         <p>Hello ${username},</p>
         <p>Your order <strong>#${orderNumber}</strong> status has been updated to: <strong>${status.toUpperCase()}</strong></p>
         ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
-        <p>Thank you for choosing CaterVegas!</p>
+        <p>Thank you for choosing CaterLV!</p>
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
         <p style="color: #666; font-size: 12px;">
           This is an automated message. Please do not reply to this email.
@@ -112,7 +112,7 @@ const emailTemplates = {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2e7d32;">Account Reactivated</h2>
         <p>Hello ${username},</p>
-        <p>Your CaterVegas account has been reactivated.</p>
+        <p>Your CaterLV account has been reactivated.</p>
         <p>You can now access your account normally.</p>
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
         <p style="color: #666; font-size: 12px;">
@@ -123,7 +123,7 @@ const emailTemplates = {
   }),
 
   passwordReset: (username, newPassword) => ({
-    subject: 'Password Reset - CaterVegas',
+    subject: 'Password Reset - CaterLV',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #333;">Password Reset</h2>
@@ -143,12 +143,12 @@ const emailTemplates = {
   }),
 
   adminPromotion: (username) => ({
-    subject: 'Admin Access Granted - CaterVegas',
+    subject: 'Admin Access Granted - CaterLV',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #7b1fa2;">Admin Access Granted</h2>
         <p>Hello ${username},</p>
-        <p>You have been granted administrator access to CaterVegas.</p>
+        <p>You have been granted administrator access to CaterLV.</p>
         <p>You can now access the admin dashboard to manage orders and users.</p>
         <p><strong>Please use this access responsibly.</strong></p>
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">

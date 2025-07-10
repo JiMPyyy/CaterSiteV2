@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CaterVegas - Corporate Catering Platform",
+  title: "CaterLV - Corporate Catering Platform",
   description: "Fast, reliable catering from Las Vegas's favorite spots — delivered when you need it.",
 };
 

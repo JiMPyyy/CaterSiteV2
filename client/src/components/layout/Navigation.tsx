@@ -23,12 +23,26 @@ export default function Navigation() {
       backgroundColor: 'rgba(255, 255, 255, 0.9)',
       borderBottom: '1px solid rgb(113, 113, 122)'
     }}>
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="text-2xl font-extrabold tracking-tight" style={{ color: 'rgb(15, 15, 15)' }}>
-          CaterVegas
-        </Link>
+      <div style={{
+        width: '100%',
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '0 1rem',
+        position: 'relative'
+      }}>
+        <div className="flex h-16 items-center" style={{ position: 'relative' }}>
+          <div style={{
+            position: 'absolute',
+            left: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          }}>
+            <Link href="/" className="text-2xl font-extrabold tracking-tight" style={{ color: 'rgb(15, 15, 15)' }}>
+              CaterLV
+            </Link>
+          </div>
 
-        <nav className="flex gap-6 text-sm font-medium items-center">
+          <nav className="flex gap-6 text-sm font-medium items-center" style={{ marginLeft: 'auto' }}>
           <Link
             href="/order"
             className={isActive('/order')}
@@ -105,6 +119,7 @@ export default function Navigation() {
             </div>
           )}
         </nav>
+        </div>
       </div>
 
       {/* Modals */}

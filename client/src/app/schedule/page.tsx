@@ -392,7 +392,7 @@ export default function SchedulePage() {
         backgroundColor: 'rgb(255, 255, 255)'
       }}>
         <div className="container mx-auto px-4 py-6 text-center text-sm" style={{ color: 'rgb(15, 15, 15)' }}>
-          © {new Date().getFullYear()} CaterVegas. All rights reserved.
+          © {new Date().getFullYear()} CaterLV. All rights reserved.
         </div>
       </footer>
     </div>

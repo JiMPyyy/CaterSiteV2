@@ -24,6 +24,7 @@ export interface AdminOrder {
   };
   items: Array<{
     name: string;
+    description?: string;
     price: number;
     quantity: number;
     restaurant: string;

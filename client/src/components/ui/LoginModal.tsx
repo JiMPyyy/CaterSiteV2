@@ -54,7 +54,14 @@ export default function LoginModal({ isOpen, onClose }: Props) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          className="fixed top-0 left-0 w-full h-full z-50 backdrop-blur-sm"
+          style={{
+            backgroundColor: 'rgba(15, 15, 15, 0.4)',
+            display: 'grid',
+            placeItems: 'center',
+            minHeight: '100vh',
+            padding: '1rem'
+          }}
           onClick={(e) => {
             // Only close if clicking directly on the backdrop (not bubbled from child)
             if (e.target === e.currentTarget && !isLoading) {
@@ -69,10 +76,10 @@ export default function LoginModal({ isOpen, onClose }: Props) {
             exit={{ y: 20, opacity: 0, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             onClick={e => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-2xl p-6 shadow-xl"
+            className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-6 shadow-xl"
             style={{
-              backgroundColor: 'rgb(250, 244, 232)',
-              border: '2px solid rgb(204, 62, 54)'
+              backgroundColor: 'rgb(255, 255, 255)',
+              border: '2px solid rgb(15, 15, 15)'
             }}
           >
             <button
@@ -90,25 +97,25 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                   : 'transition'
               }`}
               style={{
-                color: isLoading ? 'rgb(204, 62, 54)' : 'rgb(204, 62, 54)'
+                color: isLoading ? 'rgb(113, 113, 122)' : 'rgb(15, 15, 15)'
               }}
-              onMouseEnter={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(184, 42, 34)')}
-              onMouseLeave={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(204, 62, 54)')}
+              onMouseEnter={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(113, 113, 122)')}
+              onMouseLeave={(e) => !isLoading && (e.currentTarget.style.color = 'rgb(15, 15, 15)')}
               aria-label="Close"
             >
               &times;
             </button>
 
-            <h2 className="mb-5 text-center text-2xl font-bold" style={{ color: 'rgb(34, 139, 87)' }}>
-              Login to CaterVegas&nbsp;🎲
+            <h2 className="mb-5 text-center text-2xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+              Login to CaterLV
             </h2>
 
             {/* Error message */}
             {error && (
               <div className="mb-4 p-3 rounded-lg" style={{
-                backgroundColor: 'rgba(204, 62, 54, 0.1)',
-                border: '1px solid rgb(204, 62, 54)',
-                color: 'rgb(204, 62, 54)'
+                backgroundColor: 'rgba(15, 15, 15, 0.1)',
+                border: '1px solid rgb(15, 15, 15)',
+                color: 'rgb(15, 15, 15)'
               }}>
                 {error}
               </div>
@@ -121,7 +128,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
             >
               {/* username */}
               <label className="block">
-                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Username</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(15, 15, 15)' }}>Username</span>
                 <input
                   type="text"
                   name="username"
@@ -131,9 +138,10 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                   placeholder="Enter your username"
                   className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
                   style={{
-                    border: '1px solid rgb(204, 62, 54)',
-                    backgroundColor: 'rgb(250, 244, 232)',
-                    color: 'rgb(34, 139, 87)'
+                    border: '1px solid rgb(113, 113, 122)',
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    color: 'rgb(15, 15, 15)',
+                    focusRingColor: 'rgb(15, 15, 15)'
                   }}
                   disabled={isLoading}
                 />
@@ -141,7 +149,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
 
               {/* password */}
               <label className="block">
-                <span className="text-sm font-medium" style={{ color: 'rgb(34, 139, 87)' }}>Password</span>
+                <span className="text-sm font-medium" style={{ color: 'rgb(15, 15, 15)' }}>Password</span>
                 <input
                   type="password"
                   name="password"
@@ -151,9 +159,10 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                   placeholder="Enter your password"
                   className="mt-1 w-full rounded-xl px-4 py-2 focus:outline-none focus:ring-2"
                   style={{
-                    border: '1px solid rgb(204, 62, 54)',
-                    backgroundColor: 'rgb(250, 244, 232)',
-                    color: 'rgb(34, 139, 87)'
+                    border: '1px solid rgb(113, 113, 122)',
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    color: 'rgb(15, 15, 15)',
+                    focusRingColor: 'rgb(15, 15, 15)'
                   }}
                   disabled={isLoading}
                 />
@@ -164,9 +173,9 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                 type="submit"
                 disabled={isLoading}
                 className="w-full rounded-xl py-2 font-semibold text-white shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: 'rgb(34, 139, 87)' }}
-                onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(24, 119, 67)')}
-                onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(34, 139, 87)')}
+                style={{ backgroundColor: 'rgb(15, 15, 15)' }}
+                onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(113, 113, 122)')}
+                onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = 'rgb(15, 15, 15)')}
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>

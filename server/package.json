@@ -1,7 +1,7 @@
 {
-  "name": "catervegas-server",
+  "name": "caterlv-server",
   "version": "1.0.0",
-  "description": "CaterVegas Backend API Server",
+  "description": "CaterLV Backend API Server",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

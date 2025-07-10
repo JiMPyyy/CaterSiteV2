@@ -12,7 +12,7 @@ import StripePaymentForm from '@/components/payment/StripePaymentForm';
 type MenuItem = {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   category: 'main' | 'dessert' | 'beverage';
   dietaryInfo: string[];
@@ -20,7 +20,136 @@ type MenuItem = {
   isCustomizable?: boolean;
   pricing?: { small: number; large: number };
   flavors?: string[];
+  hasMultipleSizes?: boolean;
+  sizes?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    description?: string;
+    platters?: {
+      itemCount: number;
+      discount: number;
+      description: string;
+      piecesPerOption?: number;
+      totalPieces?: number;
+      type?: 'mixed' | 'nigiri' | 'sashimi';
+    };
+  }>;
+  platters?: {
+    itemCount: number;
+    discount: number;
+    description: string;
+    piecesPerOption?: number;
+    totalPieces?: number;
+    type?: 'mixed' | 'nigiri' | 'sashimi';
+  };
 };
+
+// Available sushi items for platter selection (not shown in main menu)
+const availableSushiItems = [
+  // Basic Rolls
+  { id: 'avokyu-roll', name: 'Avokyu Roll', description: 'Avocado and cucumber wrapped in rice and seaweed.', price: 4.75, category: 'main' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/on-demand-avokyu-roll.jpg' },
+  { id: 'cucumber-roll', name: 'Cucumber Roll', description: 'Simple and fresh cucumber roll.', price: 3.95, category: 'main' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/on-demand-veggie-roll.jpg' },
+  { id: 'negihama-roll', name: 'Negihama Roll', description: 'Yellowtail and green onion roll.', price: 5.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-negihama-roll.jpg' },
+  { id: 'sake-maki-roll', name: 'Sake Maki Roll', description: 'Classic salmon roll.', price: 5.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-saki-maki-roll.jpg' },
+  { id: 'salmon-skin-hand-roll', name: 'Salmon Skin Hand Roll', description: 'Salmon skin with cucumber and avocado.', price: 9.00, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-salmon-skin-hand-roll.jpg' },
+  { id: 'shrimp-tempura-roll', name: 'Shrimp Tempura Roll', description: 'Shrimp tempura, avocado, cucumber, and unagi sauce.', price: 8.00, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-crab-tempura-crunch-roll.jpg' },
+  { id: 'tuna-roll', name: 'Tuna Roll', description: 'Fresh tuna with rice and seaweed.', price: 5.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-tuna-roll.jpg' },
+  { id: 'salmon-skin-roll', name: 'Salmon Skin Roll', description: 'Crispy salmon skin with savory sauce.', price: 9.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-salmon-skin-hand-roll.jpg' },
+
+  // Specialty Rolls
+  { id: '007-roll', name: '007 Roll', description: 'Specialty roll with premium ingredients.', price: 10.35, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'alaskan-roll', name: 'Alaskan Roll', description: 'Fresh salmon and avocado roll.', price: 8.06, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-alaskan-roll.jpg' },
+  { id: 'baked-scallops-roll', name: 'Baked Scallops Roll', description: 'Baked scallops with special sauce.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'batman-burrito', name: 'Batman Burrito', description: 'Large sushi burrito with multiple fillings.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'blackjack-roll', name: 'Blackjack Roll', description: 'Bold flavors with spicy kick.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-blackjack-roll.jpg' },
+  { id: 'boss-coskey-roll', name: 'Boss Coskey Roll', description: 'Chef\'s special creation.', price: 9.90, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'california-roll', name: 'California Roll', description: 'Classic crab, avocado, and cucumber roll.', price: 7.20, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-cali-roll.jpg' },
+  { id: 'caterpillar-roll', name: 'Caterpillar Roll', description: 'Eel and cucumber topped with avocado.', price: 8.10, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-caterpillar-roll.jpg' },
+  { id: 'chanel-roll', name: 'Chanel Roll', description: 'Elegant roll with premium ingredients.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-chanel-roll.jpg' },
+  { id: 'crab-tempura-crunch-roll', name: 'Crab Tempura Crunch Roll', description: 'Crispy crab tempura with crunch.', price: 9.90, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-crab-tempura-crunch-roll.jpg' },
+  { id: 'crispy-rice-roll', name: 'Crispy Rice Roll', description: 'Crispy rice topped with fresh fish.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-crispy-rice-roll.jpg' },
+  { id: 'dexter-dragon-roll', name: 'Dexter Dragon Roll', description: 'Dragon-style roll with eel and avocado.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-dexter-dragon-roll.jpg' },
+  { id: 'dont-be-like-mason-roll', name: "Don't Be Like Mason Roll", description: 'Unique house special roll.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-dont-be-like-mason-roll.jpg' },
+  { id: 'double-dragon-roll', name: 'Double Dragon Roll', description: 'Double portion of dragon roll goodness.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-dragon-dragon-roll.jpg' },
+  { id: 'double-yellowtail-roll', name: 'Double Yellowtail Roll', description: 'Extra yellowtail for fish lovers.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-double-yellowtail-roll.jpg' },
+  { id: 'fire-down-below-roll', name: 'Fire Down Below Roll', description: 'Spicy roll with heat from below.', price: 10.35, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-fire-down-below-roll.jpg' },
+  { id: 'fire-tempura-crunch-roll', name: 'Fire Tempura Crunch Roll', description: 'Spicy tempura with extra crunch.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-fire-tempura-crunch-roll.jpg' },
+  { id: 'fleury-fire-roll', name: 'Fleury Fire Roll', description: 'Fiery roll with bold flavors.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-fleury-fire-roll.jpg' },
+  { id: 'flying-hawaiian-roll', name: 'Flying Hawaiian Roll', description: 'Tropical flavors with pineapple.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-flying-hawaiin-roll.jpg' },
+  { id: 'futomaki-roll', name: 'Futomaki Roll', description: 'Large traditional Japanese roll.', price: 8.10, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-futomaki-roll.jpg' },
+  { id: 'gg-special-roll', name: 'GG Special Roll', description: 'House specialty with premium ingredients.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-gg-special-roll.jpg' },
+  { id: 'golden-cali-roll', name: 'Golden Cali Roll', description: 'California roll with golden touch.', price: 9.00, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-golden-cali-roll.jpg' },
+  { id: 'golden-knight-roll', name: 'Golden Knight Roll', description: 'Noble roll with golden ingredients.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-knight-hawk-roll.jpg' },
+  { id: 'golden-tiger-roll', name: 'Golden Tiger Roll', description: 'Tiger roll with golden accents.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-golden-tiger-roll.jpg' },
+  { id: 'habanero-roll', name: 'Habanero Roll', description: 'Extra spicy roll with habanero.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-habanero-roll.jpg' },
+  { id: 'hawaiian-roll', name: 'Hawaiian Roll', description: 'Tropical roll with island flavors.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-hawaiin-roll.jpg' },
+  { id: 'heart-attack-roll', name: 'Heart Attack Roll', description: 'Intensely flavorful roll.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'hulk-burrito', name: 'Hulk Burrito', description: 'Massive sushi burrito.', price: 13.46, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'japanese-lasagna-roll', name: 'Japanese Lasagna Roll', description: 'Layered roll like lasagna.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'johnny-roll', name: 'Johnny Roll', description: 'Signature roll with special sauce.', price: 13.46, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-johnny-roll.jpg' },
+  { id: 'kelly-crunch-roll', name: 'Kelly Crunch Roll', description: 'Crunchy roll with tempura flakes.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-kelly-crunch-roll.jpg' },
+  { id: 'kiss-of-fire-roll', name: 'Kiss Of Fire Roll', description: 'Spicy roll with fiery kiss.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-kiss-of-fire-roll.jpg' },
+  { id: 'knight-hawk-roll', name: 'Knight Hawk Roll', description: 'Bold roll with sharp flavors.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-knight-hawk-roll.jpg' },
+  { id: 'knight-time-roll', name: 'Knight Time Roll', description: 'Evening special roll.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-knight-time-roll.jpg' },
+  { id: 'kristen-special-roll', name: 'Kristen Special Roll', description: 'Chef Kristen\'s signature creation.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-kristen-special-roll.jpg' },
+  { id: 'lilly-roll', name: 'Lilly Roll', description: 'Delicate roll with elegant presentation.', price: 9.90, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-lilly-roll.jpg' },
+  { id: 'lisa-lisa-roll', name: 'Lisa Lisa Roll', description: 'Double the flavor, double the fun.', price: 7.16, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-lisa-lisa-roll.jpg' },
+  { id: 'ods-hand-roll', name: 'ODS Hand Roll', description: 'Hand-rolled specialty.', price: 13.46, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-ods1-roll.jpg' },
+  { id: 'ods1-roll', name: 'ODS1 Roll', description: 'First in the ODS series.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-ods1-roll.jpg' },
+  { id: 'ods2-roll', name: 'ODS2 Roll', description: 'Second in the ODS series.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-ods1-roll.jpg' },
+  { id: 'on-demand-roll', name: 'On Demand Roll', description: 'Our signature house roll.', price: 11.70, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-on-demand-roll.jpg' },
+  { id: 'orange-blossom-roll', name: 'Orange Blossom Roll', description: 'Citrusy roll with orange accents.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-orange-blossom-roll.jpg' },
+  { id: 'philly-roll', name: 'Philly Roll', description: 'Philadelphia-style with cream cheese.', price: 7.16, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-philly-roll.jpg' },
+  { id: 'playboy-roll', name: 'Playboy Roll', description: 'Luxurious roll with premium toppings.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-playboy-roll.jpg' },
+  { id: 'rainbow-roll', name: 'Rainbow Roll', description: 'Colorful roll with assorted fish.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-rainbow-roll.jpg' },
+  { id: 'salmon-avocado-roll', name: 'Salmon Avocado Roll', description: 'Fresh salmon with creamy avocado.', price: 8.06, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-salmon-avocado-roll.jpg' },
+  { id: 'sammy-special-roll', name: 'Sammy Special Roll', description: 'Chef Sammy\'s signature creation.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'sashimi-roll', name: 'Sashimi Roll', description: 'Fresh sashimi wrapped in rice.', price: 13.46, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-sashimi-roll.jpg' },
+  { id: 'sexy-gg-roll', name: 'Sexy GG Roll', description: 'Seductive flavors in every bite.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-gg-special-roll.jpg' },
+  { id: 'something-wrong-roll', name: 'Something Wrong Roll', description: 'Mysteriously delicious roll.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'southern-highlands-roll', name: 'Southern Highlands Roll', description: 'Southern-inspired sushi roll.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'spicy-crab-roll', name: 'Spicy Crab Roll', description: 'Spicy crab with kick.', price: 7.20, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-spicy-crab-roll.jpg' },
+  { id: 'spicy-crabby-salmon-lemon-roll', name: 'Spicy Crabby Salmon Lemon Roll', description: 'Spicy crab and salmon with lemon.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-spicy-crabby-salmon-lemon-roll.jpg' },
+  { id: 'spicy-tataki-roll', name: 'Spicy Tataki Roll', description: 'Seared fish with spicy sauce.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-spicy-tuna-roll.jpg' },
+  { id: 'spicy-tuna-roll', name: 'Spicy Tuna Roll', description: 'Spicy tuna with mayo and sriracha.', price: 7.16, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-spicy-tuna-roll.jpg' },
+  { id: 'spider-roll', name: 'Spider Roll', description: 'Soft shell crab tempura roll.', price: 9.90, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-spider-roll.jpg' },
+  { id: 'the-cros-roll', name: 'The Cros Roll', description: 'Signature house creation.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'tiger-roll', name: 'Tiger Roll', description: 'Striped roll with bold flavors.', price: 12.56, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-tiger-roll.jpg' },
+  { id: 'tnt-natasha-roll', name: 'TNT Natasha Roll', description: 'Explosive flavors that pack a punch.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'too-hot-too-sexy-roll', name: 'Too Hot Too Sexy Roll', description: 'Dangerously spicy and irresistible.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' },
+  { id: 'tuna-cali', name: 'Tuna Cali', description: 'Tuna version of California roll.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-tuna-everywhere.jpg' },
+  { id: 'veggie-roll', name: 'Veggie Roll', description: 'Fresh vegetables wrapped in rice.', price: 8.10, category: 'main' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/on-demand-veggie-roll.jpg' },
+  { id: 'wet-dream-roll', name: 'Wet Dream Roll', description: 'Indulgent roll of your dreams.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-wet-dream-roll.jpg' },
+  { id: 'whos-your-mother-roll', name: "Who's Your Mother Roll", description: 'Bold roll with attitude.', price: 12.60, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-007-roll.jpg' }
+];
+
+// Available nigiri options for nigiri platters
+const availableNigiriOptions = [
+  { id: 'ahi-nigiri', name: 'Ahi Nigiri', description: 'Premium ahi tuna over rice.', price: 11.79, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-ahi.jpg?v=1' },
+  { id: 'albacore-nigiri', name: 'Albacore Nigiri', description: 'White tuna over seasoned rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-albacore.jpg?v=1' },
+  { id: 'ebi-shrimp-nigiri', name: 'Ebi (Shrimp) Nigiri', description: 'Cooked shrimp over rice.', price: 11.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-ebi(shrimp).jpg?v=1' },
+  { id: 'escolar-super-white-nigiri', name: 'Escolar (Super White) Nigiri', description: 'Buttery super white fish over rice.', price: 12.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-escolar(Super White).jpg?v=1' },
+  { id: 'garlic-tuna-nigiri', name: 'Garlic Tuna Nigiri', description: 'Ahi tuna with garlic seasoning over rice.', price: 12.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Garlic-Tuna.jpg?v=1' },
+  { id: 'hamachi-yellowtail-nigiri', name: 'Hamachi (Yellowtail) Nigiri', description: 'Fresh yellowtail over rice.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Hamachi(yellowtail).jpg?v=1' },
+  { id: 'hirame-halibut-nigiri', name: 'Hirame (Halibut) Nigiri', description: 'Delicate halibut over rice.', price: 13.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-hirame(halibut).jpg?v=1' },
+  { id: 'salmon-nigiri', name: 'Salmon (Sake) Nigiri', description: 'Fresh Atlantic salmon over rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-salmon(sake).jpg?v=1' },
+  { id: 'salmon-heaven-nigiri', name: 'Salmon Heaven Nigiri', description: 'Premium salmon preparation over rice.', price: 12.75, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-salmon-heaven.jpg?v=1' },
+  { id: 'smoked-paprika-salmon-nigiri', name: 'Smoked Paprika Salmon Nigiri', description: 'Salmon with smoked paprika over rice.', price: 12.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Smoked-Paprika-Salmon.jpg?v=1' },
+  { id: 'tamago-sweet-egg-nigiri', name: 'Tamago (Sweet Egg) Nigiri', description: 'Sweet Japanese omelet over rice.', price: 7.88, category: 'main' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/nigiri/on-demand-nigiri-Tamago(Sweet egg).jpg?v=1' },
+  { id: 'unagi-eel-nigiri', name: 'Unagi (Eel) Nigiri', description: 'Grilled eel with sweet sauce over rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-unagi(eel).jpg?v=1' },
+  { id: 'yuzu-yellowtail-nigiri', name: 'Yuzu Yellowtail Nigiri', description: 'Yellowtail with yuzu citrus over rice.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-yuzu-yellowtail.jpg?v=1' }
+];
+
+// Available sashimi options for sashimi platters
+const availableSashimiOptions = [
+  { id: 'ahi-sashimi', name: 'Ahi Sashimi', description: 'Premium ahi tuna slices.', price: 12.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Ahi.jpg?v=1' },
+  { id: 'albacore-sashimi', name: 'Albacore Sashimi', description: 'White tuna sashimi slices.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Albacore.jpg?v=1' },
+  { id: 'ebi-shrimp-sashimi', name: 'Ebi (Shrimp) Sashimi', description: 'Cooked shrimp sashimi.', price: 10.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Ebi(Shrimp).jpg?v=1' },
+  { id: 'garlic-tuna-sashimi', name: 'Garlic Tuna Sashimi', description: 'Ahi tuna with garlic seasoning.', price: 13.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Garlic-Tuna.jpg?v=1' },
+  { id: 'hamachi-yellowtail-sashimi', name: 'Hamachi (Yellowtail) Sashimi', description: 'Fresh yellowtail sashimi.', price: 13.05, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Hamachi(YellowTail).jpg?v=1' },
+  { id: 'salmon-sake-sashimi', name: 'Salmon (Sake) Sashimi', description: 'Fresh Atlantic salmon sashimi.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Salmon(Sake).jpg?v=1' }
+];
 
 // Individual sandwich options for sampler plate
 const capriottisIndividualSandwiches = [
@@ -34,7 +163,6 @@ const capriottisIndividualSandwiches = [
   { id: 'italian-sub', name: 'Italian Sub', isWagyu: false, image: '/menu/sandwiches/italian-sand.webp' },
   { id: 'tuna-sub', name: 'Tuna Sub', isWagyu: false, image: '/menu/sandwiches/tuna-sand.webp' },
   { id: 'blt', name: 'The BLT', isWagyu: false, image: '/menu/sandwiches/blt-sand.webp' },
-  { id: 'cheese-sub', name: 'Cheese Sub', isWagyu: false, image: '/menu/sandwiches/soda-bottles.webp' },
   { id: 'classic-club', name: 'Classic Club', isWagyu: false, image: '/menu/sandwiches/classic-club.webp' },
   { id: 'wagyu-club', name: 'Wagyu Club', isWagyu: true, image: '/menu/sandwiches/american-waygu-club-sand.webp' }
 ];
@@ -167,50 +295,165 @@ const restaurantMenus = {
     name: "Sushi on Demand",
     items: [
       {
-        id: 'sushi1',
-        name: 'California Roll',
-        description: 'Crab, avocado, cucumber with sesame seeds',
-        price: 8.99,
+        id: 'sushi-platter',
+        name: 'Sushi Platter',
+        description: 'Pick your platter size and select rolls, Sashimi, or Nigiri with 10% off',
+        price: 0, // Will be calculated based on size selection
         category: 'main' as const,
         dietaryInfo: [],
-        image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&crop=center',
+        isCustomizable: true,
+        hasMultipleSizes: true,
+        sizes: [
+          {
+            id: 'platter-5',
+            name: '5 Item Platter',
+            price: 44.99,
+            description: 'Choose 5 items from our selection of rolls, sashimi, and nigiri',
+            platters: {
+              itemCount: 5,
+              discount: 0.10,
+              description: 'Choose 5 items from our selection of rolls, sashimi, and nigiri'
+            }
+          },
+          {
+            id: 'platter-8',
+            name: '8 Item Platter',
+            price: 71.99,
+            description: 'Choose 8 items from our selection of rolls, sashimi, and nigiri',
+            platters: {
+              itemCount: 8,
+              discount: 0.10,
+              description: 'Choose 8 items from our selection of rolls, sashimi, and nigiri'
+            }
+          },
+          {
+            id: 'platter-10',
+            name: '10 Item Platter',
+            price: 89.99,
+            description: 'Choose 10 items from our selection of rolls, sashimi, and nigiri',
+            platters: {
+              itemCount: 10,
+              discount: 0.10,
+              description: 'Choose 10 items from our selection of rolls, sashimi, and nigiri'
+            }
+          }
+        ]
       },
       {
-        id: 'sushi2',
-        name: 'Salmon Nigiri (2 pieces)',
-        description: 'Fresh salmon over seasoned sushi rice',
-        price: 6.99,
+        id: 'sushi-nigiri-platter',
+        name: 'Nigiri Platter',
+        description: 'Choose your nigiri selections and platter size',
+        price: 0, // Will be set by size selection
         category: 'main' as const,
         dietaryInfo: [],
-        image: 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=400&h=300&fit=crop&crop=center'
+        image: '/menu/Sushi/nigiri/on-demand-nigiri-Garlic-Tuna.jpg',
+        isCustomizable: true,
+        hasMultipleSizes: true,
+        sizes: [
+          {
+            id: 'nigiri-20',
+            name: '20 Piece Nigiri Platter',
+            price: 50.00,
+            description: 'Choose 4 nigiri options and get 5 pieces of each (20 total pieces)',
+            platters: {
+              itemCount: 4,
+              piecesPerOption: 5,
+              totalPieces: 20,
+              discount: 0,
+              description: 'Choose 4 nigiri options and get 5 pieces of each (20 total pieces)',
+              type: 'nigiri'
+            }
+          },
+          {
+            id: 'nigiri-40',
+            name: '40 Piece Nigiri Platter',
+            price: 95.00,
+            description: 'Choose 8 nigiri options and get 5 pieces of each (40 total pieces)',
+            platters: {
+              itemCount: 8,
+              piecesPerOption: 5,
+              totalPieces: 40,
+              discount: 0,
+              description: 'Choose 8 nigiri options and get 5 pieces of each (40 total pieces)',
+              type: 'nigiri'
+            }
+          },
+          {
+            id: 'nigiri-100',
+            name: '100 Piece Nigiri Platter',
+            price: 200.00,
+            description: 'Choose 10 nigiri options and get 10 pieces of each (100 total pieces)',
+            platters: {
+              itemCount: 10,
+              piecesPerOption: 10,
+              totalPieces: 100,
+              discount: 0,
+              description: 'Choose 10 nigiri options and get 10 pieces of each (100 total pieces)',
+              type: 'nigiri'
+            }
+          }
+        ]
       },
       {
-        id: 'sushi3',
-        name: 'Spicy Tuna Roll',
-        description: 'Spicy tuna with cucumber and spicy mayo',
-        price: 9.99,
+        id: 'sushi-sashimi-platter',
+        name: 'Sashimi Platter',
+        description: 'Choose your sashimi selections and platter size',
+        price: 0, // Will be set by size selection
         category: 'main' as const,
         dietaryInfo: [],
-        image: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400&h=300&fit=crop&crop=center'
+        image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Salmon(Sake).jpg',
+        isCustomizable: true,
+        hasMultipleSizes: true,
+        sizes: [
+          {
+            id: 'sashimi-18',
+            name: '18 Piece Sashimi Platter',
+            price: 55.00,
+            description: 'Choose 3 sashimi options and get 6 pieces of each (18 total pieces)',
+            platters: {
+              itemCount: 3,
+              piecesPerOption: 6,
+              totalPieces: 18,
+              discount: 0,
+              description: 'Choose 3 sashimi options and get 6 pieces of each (18 total pieces)',
+              type: 'sashimi'
+            }
+          },
+          {
+            id: 'sashimi-30',
+            name: '30 Piece Sashimi Platter',
+            price: 95.00,
+            description: 'Choose 5 sashimi options and get 6 pieces of each (30 total pieces)',
+            platters: {
+              itemCount: 5,
+              piecesPerOption: 6,
+              totalPieces: 30,
+              discount: 0,
+              description: 'Choose 5 sashimi options and get 6 pieces of each (30 total pieces)',
+              type: 'sashimi'
+            }
+          },
+          {
+            id: 'sashimi-60',
+            name: '60 Piece Sashimi Platter',
+            price: 185.00,
+            description: 'Choose all 6 sashimi options and get 10 pieces of each (60 total pieces)',
+            platters: {
+              itemCount: 6,
+              piecesPerOption: 10,
+              totalPieces: 60,
+              discount: 0,
+              description: 'Choose all 6 sashimi options and get 10 pieces of each (60 total pieces)',
+              type: 'sashimi'
+            }
+          }
+        ]
       },
-      {
-        id: 'sushi4',
-        name: 'Vegetable Roll',
-        description: 'Cucumber, avocado, carrot, and lettuce',
-        price: 7.99,
-        category: 'main' as const,
-        dietaryInfo: ['vegetarian', 'vegan'],
-        image: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=400&h=300&fit=crop&crop=center'
-      },
-      {
-        id: 'sushi5',
-        name: 'Mochi Ice Cream',
-        description: 'Sweet rice cake filled with ice cream (3 pieces)',
-        price: 5.99,
-        category: 'dessert' as const,
-        dietaryInfo: ['vegetarian'],
-        image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop&crop=center'
-      },
+
+
+
+
       {
         id: 'sushi6',
         name: 'Green Tea',
@@ -325,6 +568,69 @@ export default function OrderPage() {
   const [sodaQuantities, setSodaQuantities] = useState<{[key: string]: number}>({});
   const sodaModalRef = useRef<HTMLDivElement>(null);
 
+  // Sushi platter selection state
+  const [showSushiPlatterModal, setShowSushiPlatterModal] = useState(false);
+  const [selectedSushiPlatter, setSelectedSushiPlatter] = useState<any>(null);
+  const [selectedPlatterSize, setSelectedPlatterSize] = useState<any>(null);
+  const [sushiPlatterSelections, setSushiPlatterSelections] = useState<any[]>([]);
+  const sushiPlatterModalRef = useRef<HTMLDivElement>(null);
+
+  // Nigiri platter selection state
+  const [showNigiriPlatterModal, setShowNigiriPlatterModal] = useState(false);
+  const [selectedNigiriPlatter, setSelectedNigiriPlatter] = useState<any>(null);
+  const [selectedNigiriSize, setSelectedNigiriSize] = useState<any>(null);
+  const [nigiriPlatterSelections, setNigiriPlatterSelections] = useState<any[]>([]);
+  const nigiriPlatterModalRef = useRef<HTMLDivElement>(null);
+
+  // Sashimi platter selection state
+  const [showSashimiPlatterModal, setShowSashimiPlatterModal] = useState(false);
+  const [selectedSashimiPlatter, setSelectedSashimiPlatter] = useState<any>(null);
+  const [selectedSashimiSize, setSelectedSashimiSize] = useState<any>(null);
+  const [sashimiPlatterSelections, setSashimiPlatterSelections] = useState<any[]>([]);
+  const sashimiPlatterModalRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when required items are selected
+  useEffect(() => {
+    if (selectedPlatterSize && sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount) {
+      setTimeout(() => {
+        if (sushiPlatterModalRef.current) {
+          sushiPlatterModalRef.current.scrollTo({
+            top: sushiPlatterModalRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 300); // Small delay to ensure the UI has updated
+    }
+  }, [sushiPlatterSelections.length, selectedPlatterSize]);
+
+  // Auto-scroll to bottom when required nigiri items are selected
+  useEffect(() => {
+    if (selectedNigiriSize && nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount) {
+      setTimeout(() => {
+        if (nigiriPlatterModalRef.current) {
+          nigiriPlatterModalRef.current.scrollTo({
+            top: nigiriPlatterModalRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 300); // Small delay to ensure the UI has updated
+    }
+  }, [nigiriPlatterSelections.length, selectedNigiriSize]);
+
+  // Auto-scroll to bottom when required sashimi items are selected
+  useEffect(() => {
+    if (selectedSashimiSize && sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount) {
+      setTimeout(() => {
+        if (sashimiPlatterModalRef.current) {
+          sashimiPlatterModalRef.current.scrollTo({
+            top: sashimiPlatterModalRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 300); // Small delay to ensure the UI has updated
+    }
+  }, [sashimiPlatterSelections.length, selectedSashimiSize]);
+
   // Calculate sampler price with Wagyu upcharges
   const calculateSamplerPrice = () => {
     const basePrice = samplerSize === 'small' ? 73.99 : 97.99;
@@ -381,9 +687,11 @@ export default function OrderPage() {
       const orderData: CreateOrderData = {
         items: cart.map(item => ({
           name: item.name,
+          description: item.description,
           price: item.price,
           quantity: item.quantity,
-          category: item.category
+          category: item.category,
+          dietaryInfo: item.dietaryInfo
         })),
         deliveryDate: deliveryInfo.date,
         deliveryTime: deliveryInfo.time,
@@ -424,6 +732,7 @@ export default function OrderPage() {
 
   // Handle payment error
   const handlePaymentError = (error: string) => {
+    console.log('handlePaymentError called with:', error);
     setErrorMessage(`Payment failed: ${error}`);
     setShowErrorModal(true);
     setIsProcessingPayment(false);
@@ -436,7 +745,7 @@ export default function OrderPage() {
     address: {
       street: '',
       city: '',
-      state: 'NV', // Default to Nevada since this is CaterVegas
+      state: 'NV', // Default to Nevada since this is CaterLV
       zipCode: ''
     },
     specialInstructions: ''
@@ -589,7 +898,10 @@ export default function OrderPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'rgb(255, 255, 255)' }}>
+    <div className="flex min-h-screen flex-col font-sans" style={{
+      color: 'rgb(15, 15, 15)',
+      backgroundColor: 'rgb(255, 255, 255)'
+    }}>
       <Navigation />
 
       {/* Hero Section */}
@@ -896,6 +1208,10 @@ export default function OrderPage() {
                                     }
                                     setSodaQuantities(initialQuantities);
                                     setShowSodaModal(true);
+                                  } else if (item.id.startsWith('sushi-platter-')) {
+                                    setSelectedSushiPlatter(item);
+                                    setSushiPlatterSelections([]);
+                                    setShowSushiPlatterModal(true);
                                   } else if ('isCustomizable' in item && item.isCustomizable && 'pricing' in item && item.pricing) {
                                     setSelectedTray(item);
                                     setTrayQuantities({small: 0, large: 0}); // Reset quantities
@@ -925,6 +1241,18 @@ export default function OrderPage() {
                                   }
                                   setSodaQuantities(initialQuantities);
                                   setShowSodaModal(true);
+                                } else if (item.id === 'sushi-platter') {
+                                  setSelectedSushiPlatter(item);
+                                  setSushiPlatterSelections([]);
+                                  setShowSushiPlatterModal(true);
+                                } else if (item.id === 'sushi-nigiri-platter') {
+                                  setSelectedNigiriPlatter(item);
+                                  setNigiriPlatterSelections([]);
+                                  setShowNigiriPlatterModal(true);
+                                } else if (item.id === 'sushi-sashimi-platter') {
+                                  setSelectedSashimiPlatter(item);
+                                  setSashimiPlatterSelections([]);
+                                  setShowSashimiPlatterModal(true);
                                 } else if ('isCustomizable' in item && item.isCustomizable && 'pricing' in item && item.pricing) {
                                   setSelectedTray(item);
                                   setTrayQuantities({small: 0, large: 0}); // Reset quantities
@@ -1937,6 +2265,632 @@ export default function OrderPage() {
                     Add to Cart
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Sushi Platter Selection Modal */}
+        {showSushiPlatterModal && selectedSushiPlatter && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-auto"
+            onClick={() => {
+              setShowSushiPlatterModal(false);
+              setSelectedPlatterSize(null);
+              setSushiPlatterSelections([]);
+            }}
+          >
+            <motion.div
+              ref={sushiPlatterModalRef}
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto border-2 border-gray-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                    {!selectedPlatterSize ? 'Select Platter Size' : 'Customize Your Platter'}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowSushiPlatterModal(false);
+                      setSelectedPlatterSize(null);
+                      setSushiPlatterSelections([]);
+                    }}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Size Selection */}
+                {!selectedPlatterSize && selectedSushiPlatter.hasMultipleSizes && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>
+                      Choose Your Platter Size
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {selectedSushiPlatter.sizes?.map((size: any) => (
+                        <div
+                          key={size.id}
+                          onClick={() => setSelectedPlatterSize(size)}
+                          className="border-2 border-gray-200 p-4 rounded-xl cursor-pointer hover:border-black transition-colors"
+                        >
+                          <h4 className="font-semibold text-lg mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {size.name}
+                          </h4>
+                          <p className="text-sm mb-2" style={{ color: 'rgb(113, 113, 122)' }}>
+                            {size.description}
+                          </p>
+                          <p className="text-lg font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                            ${size.price.toFixed(2)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Item Selection (shown after size is selected) */}
+                {selectedPlatterSize && (
+                  <>
+                    {/* Platter Info */}
+                    <div className="mb-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <button
+                          onClick={() => {
+                            setSelectedPlatterSize(null);
+                            setSushiPlatterSelections([]);
+                          }}
+                          className="text-gray-500 hover:text-gray-700 transition-colors"
+                        >
+                          ←
+                        </button>
+                        <div>
+                          <h3 className="text-lg font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {selectedPlatterSize.name}
+                          </h3>
+                          <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                            {selectedPlatterSize.description}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sm font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Price: ${selectedPlatterSize.price.toFixed(2)} (includes 10% discount)
+                      </p>
+                    </div>
+
+                    {/* Available Sushi Items */}
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Select {selectedPlatterSize.platters?.itemCount} Items
+                      </h4>
+                      <p className="text-sm mb-4" style={{ color: 'rgb(113, 113, 122)' }}>
+                        Selected: {sushiPlatterSelections.length} / {selectedPlatterSize.platters?.itemCount}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {availableSushiItems.map((sushiItem) => {
+                          const selectedCount = sushiPlatterSelections.filter(sel => sel.id === sushiItem.id).length;
+                          const canAdd = sushiPlatterSelections.length < (selectedPlatterSize.platters?.itemCount || 0);
+
+                      return (
+                        <div key={sushiItem.id} className="border-2 border-gray-200 p-4 rounded-xl">
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={sushiItem.image}
+                              alt={sushiItem.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                            <div className="flex-grow">
+                              <h5 className="font-semibold text-sm" style={{ color: 'rgb(15, 15, 15)' }}>
+                                {sushiItem.name}
+                              </h5>
+                              <p className="text-xs" style={{ color: 'rgb(113, 113, 122)' }}>
+                                ${sushiItem.price.toFixed(2)}
+                              </p>
+                              {selectedCount > 0 && (
+                                <p className="text-xs font-semibold text-green-600">
+                                  Selected: {selectedCount}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedCount > 0 && (
+                                <button
+                                  onClick={() => {
+                                    const index = sushiPlatterSelections.findIndex(sel => sel.id === sushiItem.id);
+                                    if (index !== -1) {
+                                      const newSelections = [...sushiPlatterSelections];
+                                      newSelections.splice(index, 1);
+                                      setSushiPlatterSelections(newSelections);
+                                    }
+                                  }}
+                                  className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                                >
+                                  -
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  if (canAdd) {
+                                    setSushiPlatterSelections([...sushiPlatterSelections, sushiItem]);
+                                  }
+                                }}
+                                disabled={!canAdd}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                                  canAdd
+                                    ? 'bg-black text-white hover:bg-gray-800'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                    {/* Add to Cart Button */}
+                    <div className="pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => {
+                          if (sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount) {
+                            const platterItem = {
+                              ...selectedPlatterSize,
+                              id: `${selectedSushiPlatter.id}-${selectedPlatterSize.id}-${Date.now()}`,
+                              name: `${selectedPlatterSize.name} (Custom)`,
+                              description: `Custom platter with: ${sushiPlatterSelections.map(item => item.name).join(', ')}`,
+                              category: 'main' as const,
+                              dietaryInfo: [] as string[],
+                              customSelections: sushiPlatterSelections
+                            };
+                            addToCart(platterItem);
+                            setSushiPlatterSelections([]);
+                            setSelectedPlatterSize(null);
+                            setShowSushiPlatterModal(false);
+                          }
+                        }}
+                        disabled={sushiPlatterSelections.length !== selectedPlatterSize.platters?.itemCount}
+                        className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
+                          sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount
+                            ? 'bg-black hover:bg-gray-800'
+                            : 'bg-gray-300 cursor-not-allowed'
+                        }`}
+                      >
+                        {sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount
+                          ? `Add ${selectedPlatterSize.name} to Cart - $${selectedPlatterSize.price.toFixed(2)}`
+                          : `Select ${(selectedPlatterSize.platters?.itemCount || 0) - sushiPlatterSelections.length} more items`
+                        }
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Nigiri Platter Selection Modal */}
+        {showNigiriPlatterModal && selectedNigiriPlatter && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-auto"
+            onClick={() => {
+              setShowNigiriPlatterModal(false);
+              setSelectedNigiriSize(null);
+              setNigiriPlatterSelections([]);
+            }}
+          >
+            <motion.div
+              ref={nigiriPlatterModalRef}
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                    {selectedNigiriPlatter.name}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowNigiriPlatterModal(false);
+                      setSelectedNigiriSize(null);
+                      setNigiriPlatterSelections([]);
+                    }}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Size Selection */}
+                {!selectedNigiriSize && selectedNigiriPlatter.hasMultipleSizes && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>
+                      Choose Your Platter Size
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {selectedNigiriPlatter.sizes?.map((size: any) => (
+                        <div
+                          key={size.id}
+                          onClick={() => setSelectedNigiriSize(size)}
+                          className="border-2 border-gray-200 p-4 rounded-xl cursor-pointer hover:border-black transition-colors"
+                        >
+                          <h4 className="font-semibold text-lg mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {size.name}
+                          </h4>
+                          <p className="text-sm mb-2" style={{ color: 'rgb(113, 113, 122)' }}>
+                            {size.description}
+                          </p>
+                          <p className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                            ${size.price.toFixed(2)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Item Selection */}
+                {selectedNigiriSize && (
+                  <>
+                    <div className="mb-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <button
+                          onClick={() => {
+                            setSelectedNigiriSize(null);
+                            setNigiriPlatterSelections([]);
+                          }}
+                          className="text-gray-500 hover:text-gray-700 transition-colors"
+                        >
+                          ←
+                        </button>
+                        <div>
+                          <h3 className="text-lg font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {selectedNigiriSize.name}
+                          </h3>
+                          <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                            {selectedNigiriSize.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Select {selectedNigiriSize.platters?.itemCount} Items
+                      </h4>
+                      <p className="text-sm mb-4" style={{ color: 'rgb(113, 113, 122)' }}>
+                        Selected: {nigiriPlatterSelections.length} / {selectedNigiriSize.platters?.itemCount}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {availableNigiriOptions.map((nigiriItem) => {
+                          const selectedCount = nigiriPlatterSelections.filter(sel => sel.id === nigiriItem.id).length;
+                          const canAdd = nigiriPlatterSelections.length < (selectedNigiriSize.platters?.itemCount || 0);
+
+                      return (
+                        <div key={nigiriItem.id} className="border-2 border-gray-200 p-4 rounded-xl">
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={nigiriItem.image}
+                              alt={nigiriItem.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                            <div className="flex-1">
+                              <h5 className="font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                                {nigiriItem.name}
+                              </h5>
+                              {nigiriItem.description && (
+                                <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                                  {nigiriItem.description}
+                                </p>
+                              )}
+                              <p className="text-sm font-medium" style={{ color: 'rgb(15, 15, 15)' }}>
+                                ${nigiriItem.price.toFixed(2)} each
+                              </p>
+                              {selectedCount > 0 && (
+                                <p className="text-sm font-medium mt-1" style={{ color: 'rgb(15, 15, 15)' }}>
+                                  Selected: {selectedCount}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedCount > 0 && (
+                                <button
+                                  onClick={() => {
+                                    const index = nigiriPlatterSelections.findIndex(sel => sel.id === nigiriItem.id);
+                                    if (index !== -1) {
+                                      const newSelections = [...nigiriPlatterSelections];
+                                      newSelections.splice(index, 1);
+                                      setNigiriPlatterSelections(newSelections);
+                                    }
+                                  }}
+                                  className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                                >
+                                  -
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  if (canAdd) {
+                                    setNigiriPlatterSelections([...nigiriPlatterSelections, nigiriItem]);
+                                  }
+                                }}
+                                disabled={!canAdd}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                                  canAdd
+                                    ? 'bg-black text-white hover:bg-gray-800'
+                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                }`}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                      </div>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <div className="pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => {
+                          if (nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount) {
+                            const platterItem = {
+                              ...selectedNigiriSize,
+                              id: `${selectedNigiriPlatter.id}-${selectedNigiriSize.id}-${Date.now()}`,
+                              name: `${selectedNigiriSize.name} (Custom)`,
+                              description: `Custom nigiri platter with: ${nigiriPlatterSelections.map(item => item.name).join(', ')}`,
+                              category: 'main' as const,
+                              dietaryInfo: [] as string[],
+                              customSelections: nigiriPlatterSelections
+                            };
+                            addToCart(platterItem);
+                            setNigiriPlatterSelections([]);
+                            setSelectedNigiriSize(null);
+                            setShowNigiriPlatterModal(false);
+                          }
+                        }}
+                        disabled={nigiriPlatterSelections.length !== selectedNigiriSize.platters?.itemCount}
+                        className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
+                          nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount
+                            ? 'bg-black hover:bg-gray-800'
+                            : 'bg-gray-300 cursor-not-allowed'
+                        }`}
+                      >
+                        {nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount
+                          ? `Add ${selectedNigiriSize.name} to Cart - $${selectedNigiriSize.price.toFixed(2)}`
+                          : `Select ${(selectedNigiriSize.platters?.itemCount || 0) - nigiriPlatterSelections.length} more items`
+                        }
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Sashimi Platter Selection Modal */}
+        {showSashimiPlatterModal && selectedSashimiPlatter && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-auto"
+            onClick={() => {
+              setShowSashimiPlatterModal(false);
+              setSelectedSashimiSize(null);
+              setSashimiPlatterSelections([]);
+            }}
+          >
+            <motion.div
+              ref={sashimiPlatterModalRef}
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                    {selectedSashimiPlatter.name}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowSashimiPlatterModal(false);
+                      setSelectedSashimiSize(null);
+                      setSashimiPlatterSelections([]);
+                    }}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Size Selection */}
+                {!selectedSashimiSize && selectedSashimiPlatter.hasMultipleSizes && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>
+                      Choose Your Platter Size
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {selectedSashimiPlatter.sizes?.map((size: any) => (
+                        <div
+                          key={size.id}
+                          onClick={() => setSelectedSashimiSize(size)}
+                          className="border-2 border-gray-200 p-4 rounded-xl cursor-pointer hover:border-black transition-colors"
+                        >
+                          <h4 className="font-semibold text-lg mb-2" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {size.name}
+                          </h4>
+                          <p className="text-sm mb-2" style={{ color: 'rgb(113, 113, 122)' }}>
+                            {size.description}
+                          </p>
+                          <p className="text-xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>
+                            ${size.price.toFixed(2)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Item Selection */}
+                {selectedSashimiSize && (
+                  <>
+                    <div className="mb-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <button
+                          onClick={() => {
+                            setSelectedSashimiSize(null);
+                            setSashimiPlatterSelections([]);
+                          }}
+                          className="text-gray-500 hover:text-gray-700 transition-colors"
+                        >
+                          ←
+                        </button>
+                        <div>
+                          <h3 className="text-lg font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                            {selectedSashimiSize.name}
+                          </h3>
+                          <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                            {selectedSashimiSize.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold mb-4" style={{ color: 'rgb(15, 15, 15)' }}>
+                        Select {selectedSashimiSize.platters?.itemCount} Items
+                      </h4>
+                      <p className="text-sm mb-4" style={{ color: 'rgb(113, 113, 122)' }}>
+                        Selected: {sashimiPlatterSelections.length} / {selectedSashimiSize.platters?.itemCount}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {availableSashimiOptions.map((sashimiItem) => {
+                          console.log('Sashimi item:', sashimiItem.name, 'Image:', sashimiItem.image, 'Price:', sashimiItem.price);
+                          const selectedCount = sashimiPlatterSelections.filter(sel => sel.id === sashimiItem.id).length;
+                          const canAdd = sashimiPlatterSelections.length < (selectedSashimiSize.platters?.itemCount || 0);
+
+                      return (
+                        <div key={sashimiItem.id} className="border-2 border-gray-200 p-4 rounded-xl">
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={sashimiItem.image}
+                              alt={sashimiItem.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                              onError={(e) => {
+                                console.error('Failed to load image:', sashimiItem.image);
+                                e.currentTarget.style.border = '2px solid red';
+                              }}
+                              onLoad={() => console.log('Successfully loaded:', sashimiItem.image)}
+                            />
+                            <div className="flex-1">
+                              <h5 className="font-semibold" style={{ color: 'rgb(15, 15, 15)' }}>
+                                {sashimiItem.name}
+                              </h5>
+                              {sashimiItem.description && (
+                                <p className="text-sm" style={{ color: 'rgb(113, 113, 122)' }}>
+                                  {sashimiItem.description}
+                                </p>
+                              )}
+                              <p className="text-sm font-medium" style={{ color: 'rgb(15, 15, 15)' }}>
+                                ${sashimiItem.price.toFixed(2)} each
+                              </p>
+                              {selectedCount > 0 && (
+                                <p className="text-sm font-medium mt-1" style={{ color: 'rgb(15, 15, 15)' }}>
+                                  Selected: {selectedCount}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {selectedCount > 0 && (
+                                <button
+                                  onClick={() => {
+                                    const index = sashimiPlatterSelections.findIndex(sel => sel.id === sashimiItem.id);
+                                    if (index !== -1) {
+                                      const newSelections = [...sashimiPlatterSelections];
+                                      newSelections.splice(index, 1);
+                                      setSashimiPlatterSelections(newSelections);
+                                    }
+                                  }}
+                                  className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                                >
+                                  -
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  if (canAdd) {
+                                    setSashimiPlatterSelections([...sashimiPlatterSelections, sashimiItem]);
+                                  }
+                                }}
+                                disabled={!canAdd}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                                  canAdd
+                                    ? 'bg-black text-white hover:bg-gray-800'
+                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                }`}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                      </div>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <div className="pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => {
+                          if (sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount) {
+                            const platterItem = {
+                              ...selectedSashimiSize,
+                              id: `${selectedSashimiPlatter.id}-${selectedSashimiSize.id}-${Date.now()}`,
+                              name: `${selectedSashimiSize.name} (Custom)`,
+                              description: `Custom sashimi platter with: ${sashimiPlatterSelections.map(item => item.name).join(', ')}`,
+                              category: 'main' as const,
+                              dietaryInfo: [] as string[],
+                              customSelections: sashimiPlatterSelections
+                            };
+                            addToCart(platterItem);
+                            setSashimiPlatterSelections([]);
+                            setSelectedSashimiSize(null);
+                            setShowSashimiPlatterModal(false);
+                          }
+                        }}
+                        disabled={sashimiPlatterSelections.length !== selectedSashimiSize.platters?.itemCount}
+                        className={`w-full py-3 rounded-xl font-semibold text-white transition-all ${
+                          sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount
+                            ? 'bg-black hover:bg-gray-800'
+                            : 'bg-gray-300 cursor-not-allowed'
+                        }`}
+                      >
+                        {sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount
+                          ? `Add ${selectedSashimiSize.name} to Cart - $${selectedSashimiSize.price.toFixed(2)}`
+                          : `Select ${(selectedSashimiSize.platters?.itemCount || 0) - sashimiPlatterSelections.length} more items`
+                        }
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </motion.div>
           </div>

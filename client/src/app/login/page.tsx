@@ -40,7 +40,7 @@ export default function Login() {
             marginBottom: '1.5rem',
           }}
         >
-          Welcome to CaterVegas 🎲
+          Welcome to CaterLV
         </h2>
 
         <form style={{ display: 'grid', gap: '1.25rem' }}>

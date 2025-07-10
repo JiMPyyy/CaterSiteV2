@@ -1,4 +1,4 @@
-# 🍽️ CaterVegas - Corporate Catering Platform
+# 🍽️ CaterLV - Corporate Catering Platform
 
 > **Fast, reliable catering from Las Vegas's favorite spots — delivered when you need it.**
 
@@ -150,7 +150,7 @@ A complete full-stack web application for corporate catering management, built w
 
    Update `server/.env` with your MongoDB Atlas connection string:
    ```env
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/catervegas
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/caterlv
    JWT_SECRET=your-super-secret-jwt-key
    CLIENT_URL=http://localhost:3000
    ```
@@ -168,7 +168,7 @@ A complete full-stack web application for corporate catering management, built w
 ## 📁 Project Structure
 
 ```
-catersite/
+caterlv/
 ├── client/                 # Next.js Frontend
 │   ├── src/
 │   │   ├── app/           # Next.js App Router pages

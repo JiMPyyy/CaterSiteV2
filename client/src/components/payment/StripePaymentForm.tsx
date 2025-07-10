@@ -69,13 +69,22 @@ const PaymentForm = ({ amount, onPaymentSuccess, onPaymentError, isProcessing, s
         // Reset processing state after successful payment intent creation
         setIsProcessing(false);
       } else {
-        console.error('Payment intent creation failed:', data);
+        console.error('Payment intent creation failed:', {
+          status: response.status,
+          data: data,
+          message: data.message
+        });
         onPaymentError(data.message || 'Failed to initialize payment');
         setIsProcessing(false);
       }
-    } catch (error) {
-      console.error('Payment intent creation error:', error);
-      onPaymentError('Failed to initialize payment');
+    } catch (error: any) {
+      console.error('Payment intent creation error:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        full_error: error
+      });
+      onPaymentError(error.message || 'Failed to initialize payment');
       setIsProcessing(false);
     }
   };
@@ -134,8 +143,15 @@ const PaymentForm = ({ amount, onPaymentSuccess, onPaymentError, isProcessing, s
       setIsSubmittingPayment(false);
 
       if (error) {
-        console.error('Payment error:', error);
-        onPaymentError(error.message || 'Payment failed');
+        console.error('Payment error details:', {
+          message: error.message,
+          type: error.type,
+          code: error.code,
+          decline_code: error.decline_code,
+          param: error.param,
+          full_error: error
+        });
+        onPaymentError(error.message || error.type || 'Payment failed');
       } else if (paymentIntent.status === 'succeeded') {
         console.log('Payment succeeded:', paymentIntent.id);
         onPaymentSuccess(paymentIntent.id);
@@ -143,11 +159,16 @@ const PaymentForm = ({ amount, onPaymentSuccess, onPaymentError, isProcessing, s
         console.log('Unexpected payment status:', paymentIntent.status);
         onPaymentError('Payment was not completed successfully');
       }
-    } catch (err) {
-      console.error('Payment processing error:', err);
+    } catch (err: any) {
+      console.error('Payment processing error details:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack,
+        full_error: err
+      });
       setIsProcessing(false);
       setIsSubmittingPayment(false);
-      onPaymentError('Payment processing failed');
+      onPaymentError(err.message || 'Payment processing failed');
     }
   };
 

@@ -361,14 +361,19 @@ export default function AdminOrdersTable() {
                   <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
                   <div className="space-y-2">
                     {selectedOrder.items.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-gray-600">{item.restaurant}</p>
-                        </div>
-                        <div className="text-right">
-                          <p>{item.quantity}x {formatCurrency(item.price)}</p>
-                          <p className="text-sm font-medium">{formatCurrency(item.price * item.quantity)}</p>
+                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="font-medium">{item.name}</p>
+                            <p className="text-sm text-gray-600">{item.restaurant}</p>
+                            {item.description && (
+                              <p className="text-sm text-gray-700 mt-1 italic">{item.description}</p>
+                            )}
+                          </div>
+                          <div className="text-right ml-4">
+                            <p>{item.quantity}x {formatCurrency(item.price)}</p>
+                            <p className="text-sm font-medium">{formatCurrency(item.price * item.quantity)}</p>
+                          </div>
                         </div>
                       </div>
                     ))}
