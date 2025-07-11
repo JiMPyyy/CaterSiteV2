@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -643,6 +643,13 @@ export default function OrderPage() {
     }, 0);
 
     return basePrice + (wagyuCount * wagyuUpcharge);
+  };
+
+  // Calculate dynamic platter price based on selected items
+  const calculatePlatterPrice = (selections: any[], piecesPerOption: number) => {
+    return selections.reduce((total, item) => {
+      return total + item.price;
+    }, 0);
   };
 
   // Handle form submission (proceed to payment)
@@ -2436,16 +2443,37 @@ export default function OrderPage() {
                   </div>
                 </div>
 
+                    {/* Price Display */}
+                    {sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount && (
+                      <div className="pt-4 border-t border-gray-200 mb-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>Price Breakdown:</h4>
+                          {sushiPlatterSelections.map((item, index) => (
+                            <div key={index} className="flex justify-between text-sm mb-1">
+                              <span>{item.name} ({selectedPlatterSize.platters?.piecesPerOption || 1} pieces)</span>
+                              <span>${item.price.toFixed(2)}</span>
+                            </div>
+                          ))}
+                          <div className="border-t pt-2 mt-2 flex justify-between font-bold">
+                            <span>Total:</span>
+                            <span>${calculatePlatterPrice(sushiPlatterSelections, selectedPlatterSize.platters?.piecesPerOption || 1).toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Add to Cart Button */}
                     <div className="pt-4 border-t border-gray-200">
                       <button
                         onClick={() => {
                           if (sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount) {
+                            const dynamicPrice = calculatePlatterPrice(sushiPlatterSelections, selectedPlatterSize.platters?.piecesPerOption || 1);
                             const platterItem = {
                               ...selectedPlatterSize,
                               id: `${selectedSushiPlatter.id}-${selectedPlatterSize.id}-${Date.now()}`,
                               name: `${selectedPlatterSize.name} (Custom)`,
-                              description: `Custom platter with: ${sushiPlatterSelections.map(item => item.name).join(', ')}`,
+                              description: `Custom platter with: ${sushiPlatterSelections.map(item => `${item.name} (${selectedPlatterSize.platters?.piecesPerOption || 1} pieces)`).join(', ')}`,
+                              price: dynamicPrice,
                               category: 'main' as const,
                               dietaryInfo: [] as string[],
                               customSelections: sushiPlatterSelections
@@ -2464,7 +2492,7 @@ export default function OrderPage() {
                         }`}
                       >
                         {sushiPlatterSelections.length === selectedPlatterSize.platters?.itemCount
-                          ? `Add ${selectedPlatterSize.name} to Cart - $${selectedPlatterSize.price.toFixed(2)}`
+                          ? `Add ${selectedPlatterSize.name} to Cart - $${calculatePlatterPrice(sushiPlatterSelections, selectedPlatterSize.platters?.piecesPerOption || 1).toFixed(2)}`
                           : `Select ${(selectedPlatterSize.platters?.itemCount || 0) - sushiPlatterSelections.length} more items`
                         }
                       </button>
@@ -2643,16 +2671,37 @@ export default function OrderPage() {
                       </div>
                     </div>
 
+                    {/* Price Display */}
+                    {nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount && (
+                      <div className="pt-4 border-t border-gray-200 mb-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>Price Breakdown:</h4>
+                          {nigiriPlatterSelections.map((item, index) => (
+                            <div key={index} className="flex justify-between text-sm mb-1">
+                              <span>{item.name} ({selectedNigiriSize.platters?.piecesPerOption || 1} pieces)</span>
+                              <span>${item.price.toFixed(2)}</span>
+                            </div>
+                          ))}
+                          <div className="border-t pt-2 mt-2 flex justify-between font-bold">
+                            <span>Total:</span>
+                            <span>${calculatePlatterPrice(nigiriPlatterSelections, selectedNigiriSize.platters?.piecesPerOption || 1).toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Add to Cart Button */}
                     <div className="pt-4 border-t border-gray-200">
                       <button
                         onClick={() => {
                           if (nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount) {
+                            const dynamicPrice = calculatePlatterPrice(nigiriPlatterSelections, selectedNigiriSize.platters?.piecesPerOption || 1);
                             const platterItem = {
                               ...selectedNigiriSize,
                               id: `${selectedNigiriPlatter.id}-${selectedNigiriSize.id}-${Date.now()}`,
                               name: `${selectedNigiriSize.name} (Custom)`,
-                              description: `Custom nigiri platter with: ${nigiriPlatterSelections.map(item => item.name).join(', ')}`,
+                              description: `Custom nigiri platter with: ${nigiriPlatterSelections.map(item => `${item.name} (${selectedNigiriSize.platters?.piecesPerOption || 1} pieces)`).join(', ')}`,
+                              price: dynamicPrice,
                               category: 'main' as const,
                               dietaryInfo: [] as string[],
                               customSelections: nigiriPlatterSelections
@@ -2671,7 +2720,7 @@ export default function OrderPage() {
                         }`}
                       >
                         {nigiriPlatterSelections.length === selectedNigiriSize.platters?.itemCount
-                          ? `Add ${selectedNigiriSize.name} to Cart - $${selectedNigiriSize.price.toFixed(2)}`
+                          ? `Add ${selectedNigiriSize.name} to Cart - $${calculatePlatterPrice(nigiriPlatterSelections, selectedNigiriSize.platters?.piecesPerOption || 1).toFixed(2)}`
                           : `Select ${(selectedNigiriSize.platters?.itemCount || 0) - nigiriPlatterSelections.length} more items`
                         }
                       </button>
@@ -2856,16 +2905,37 @@ export default function OrderPage() {
                       </div>
                     </div>
 
+                    {/* Price Display */}
+                    {sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount && (
+                      <div className="pt-4 border-t border-gray-200 mb-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>Price Breakdown:</h4>
+                          {sashimiPlatterSelections.map((item, index) => (
+                            <div key={index} className="flex justify-between text-sm mb-1">
+                              <span>{item.name} ({selectedSashimiSize.platters?.piecesPerOption || 1} pieces)</span>
+                              <span>${item.price.toFixed(2)}</span>
+                            </div>
+                          ))}
+                          <div className="border-t pt-2 mt-2 flex justify-between font-bold">
+                            <span>Total:</span>
+                            <span>${calculatePlatterPrice(sashimiPlatterSelections, selectedSashimiSize.platters?.piecesPerOption || 1).toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Add to Cart Button */}
                     <div className="pt-4 border-t border-gray-200">
                       <button
                         onClick={() => {
                           if (sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount) {
+                            const dynamicPrice = calculatePlatterPrice(sashimiPlatterSelections, selectedSashimiSize.platters?.piecesPerOption || 1);
                             const platterItem = {
                               ...selectedSashimiSize,
                               id: `${selectedSashimiPlatter.id}-${selectedSashimiSize.id}-${Date.now()}`,
                               name: `${selectedSashimiSize.name} (Custom)`,
-                              description: `Custom sashimi platter with: ${sashimiPlatterSelections.map(item => item.name).join(', ')}`,
+                              description: `Custom sashimi platter with: ${sashimiPlatterSelections.map(item => `${item.name} (${selectedSashimiSize.platters?.piecesPerOption || 1} pieces)`).join(', ')}`,
+                              price: dynamicPrice,
                               category: 'main' as const,
                               dietaryInfo: [] as string[],
                               customSelections: sashimiPlatterSelections
@@ -2884,7 +2954,7 @@ export default function OrderPage() {
                         }`}
                       >
                         {sashimiPlatterSelections.length === selectedSashimiSize.platters?.itemCount
-                          ? `Add ${selectedSashimiSize.name} to Cart - $${selectedSashimiSize.price.toFixed(2)}`
+                          ? `Add ${selectedSashimiSize.name} to Cart - $${calculatePlatterPrice(sashimiPlatterSelections, selectedSashimiSize.platters?.piecesPerOption || 1).toFixed(2)}`
                           : `Select ${(selectedSashimiSize.platters?.itemCount || 0) - sashimiPlatterSelections.length} more items`
                         }
                       </button>
