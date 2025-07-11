@@ -109,7 +109,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
           transition={{ duration: 0.2 }}
           className="fixed top-0 left-0 w-full h-full z-50 backdrop-blur-sm"
           style={{
-            backgroundColor: 'rgba(15, 15, 15, 0.4)',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
             display: 'grid',
             placeItems: 'center',
             minHeight: '100vh',
