@@ -31,6 +31,59 @@ export default function AdminOrdersTable() {
   const [refundAmount, setRefundAmount] = useState<number | ''>('');
   const [notifyCustomer, setNotifyCustomer] = useState(true);
 
+  // Generate detailed item description with customizations
+  const generateItemDetails = (item: any) => {
+    const details = [];
+
+    if (item.description) {
+      details.push(item.description);
+    }
+
+    // Add customization details
+    if (item.customization) {
+      const custom = item.customization;
+
+      // For sampler plates (Capriotti's)
+      if (custom.sandwiches && custom.sandwiches.length > 0) {
+        details.push('📋 Sandwich Selections:');
+        custom.sandwiches.forEach((sandwich: any) => {
+          details.push(`  • ${sandwich.name}${sandwich.count > 1 ? ` (x${sandwich.count})` : ''}`);
+        });
+      }
+
+      // For sushi platters
+      if (custom.selections && custom.selections.length > 0) {
+        details.push('🍣 Sushi Selections:');
+        custom.selections.forEach((selection: any) => {
+          details.push(`  • ${selection.name} ($${selection.price.toFixed(2)})`);
+
+          // Individual item additions
+          if (selection.additions && selection.additions.length > 0) {
+            details.push('    🔸 Additions:');
+            selection.additions.forEach((addition: any) => {
+              details.push(`      - ${addition.item.name}${addition.quantity > 1 ? ` (x${addition.quantity})` : ''} (+$${(addition.item.price * addition.quantity).toFixed(2)})`);
+            });
+          }
+        });
+      }
+
+      // Global additions
+      if (custom.allAdditions && custom.allAdditions.length > 0) {
+        details.push('➕ Additional Items:');
+        custom.allAdditions.forEach((addition: any) => {
+          details.push(`  • ${addition.name}${addition.quantity > 1 ? ` (x${addition.quantity})` : ''} (+$${(addition.price * addition.quantity).toFixed(2)})`);
+        });
+      }
+
+      // Size information
+      if (custom.size) {
+        details.push(`📏 Size: ${custom.size}`);
+      }
+    }
+
+    return details;
+  };
+
   useEffect(() => {
     loadOrders();
   }, [currentPage, statusFilter, dateFilter]);
@@ -359,24 +412,40 @@ export default function AdminOrdersTable() {
 
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
-                  <div className="space-y-2">
-                    {selectedOrder.items.map((item, index) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-gray-600">{item.restaurant}</p>
-                            {item.description && (
-                              <p className="text-sm text-gray-700 mt-1 italic">{item.description}</p>
-                            )}
+                  <div className="space-y-3">
+                    {selectedOrder.items.map((item, index) => {
+                      const itemDetails = generateItemDetails(item);
+                      return (
+                        <div key={index} className="p-4 bg-gray-50 rounded-lg border">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <p className="font-medium text-lg">{item.name}</p>
+                              <p className="text-sm text-gray-600">{item.restaurant}</p>
+                            </div>
+                            <div className="text-right ml-4">
+                              <p className="font-medium">{item.quantity}x {formatCurrency(item.price)}</p>
+                              <p className="text-lg font-bold text-green-600">{formatCurrency(item.price * item.quantity)}</p>
+                            </div>
                           </div>
-                          <div className="text-right ml-4">
-                            <p>{item.quantity}x {formatCurrency(item.price)}</p>
-                            <p className="text-sm font-medium">{formatCurrency(item.price * item.quantity)}</p>
-                          </div>
+
+                          {/* Detailed customization information */}
+                          {itemDetails.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-200">
+                              <div className="bg-white p-3 rounded-md">
+                                <h5 className="font-medium text-gray-900 mb-2">Order Details:</h5>
+                                <div className="text-sm text-gray-700 space-y-1">
+                                  {itemDetails.map((detail, detailIndex) => (
+                                    <div key={detailIndex} className="whitespace-pre-line">
+                                      {detail}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex justify-between items-center font-bold text-lg">

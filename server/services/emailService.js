@@ -11,19 +11,66 @@ const createTransporter = () => {
   });
 };
 
+// Generate detailed item description with customizations
+const generateItemDescription = (item) => {
+  let description = `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`;
+
+  if (item.description) {
+    description += `\n  ${item.description}`;
+  }
+
+  // Add customization details
+  if (item.customization) {
+    const custom = item.customization;
+
+    // For sampler plates (Capriotti's)
+    if (custom.sandwiches && custom.sandwiches.length > 0) {
+      description += `\n  📋 Sandwich Selections:`;
+      custom.sandwiches.forEach(sandwich => {
+        description += `\n    - ${sandwich.name}${sandwich.count > 1 ? ` (x${sandwich.count})` : ''}`;
+      });
+    }
+
+    // For sushi platters
+    if (custom.selections && custom.selections.length > 0) {
+      description += `\n  🍣 Sushi Selections:`;
+      custom.selections.forEach(selection => {
+        description += `\n    - ${selection.name} ($${selection.price.toFixed(2)})`;
+
+        // Individual item additions
+        if (selection.additions && selection.additions.length > 0) {
+          description += `\n      🔸 Additions:`;
+          selection.additions.forEach(addition => {
+            description += `\n        • ${addition.item.name}${addition.quantity > 1 ? ` (x${addition.quantity})` : ''} (+$${(addition.item.price * addition.quantity).toFixed(2)})`;
+          });
+        }
+      });
+    }
+
+    // Global additions (for items that have overall additions)
+    if (custom.allAdditions && custom.allAdditions.length > 0) {
+      description += `\n  ➕ Additional Items:`;
+      custom.allAdditions.forEach(addition => {
+        description += `\n    - ${addition.name}${addition.quantity > 1 ? ` (x${addition.quantity})` : ''} (+$${(addition.price * addition.quantity).toFixed(2)})`;
+      });
+    }
+
+    // Size information
+    if (custom.size) {
+      description += `\n  📏 Size: ${custom.size}`;
+    }
+  }
+
+  return description;
+};
+
 // Send order notification email
 const sendOrderNotification = async (order, user) => {
   try {
     const transporter = createTransporter();
 
-    // Format order items for email
-    const itemsList = order.items.map(item => {
-      let itemText = `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`;
-      if (item.description) {
-        itemText += `\n  ${item.description}`;
-      }
-      return itemText;
-    }).join('\n');
+    // Format order items for email with detailed customizations
+    const itemsList = order.items.map(item => generateItemDescription(item)).join('\n\n');
 
     // Format delivery address
     const address = `${order.deliveryAddress.street}, ${order.deliveryAddress.city}, ${order.deliveryAddress.state} ${order.deliveryAddress.zipCode}`;

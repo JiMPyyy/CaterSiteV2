@@ -28,6 +28,34 @@ export interface AdminOrder {
     price: number;
     quantity: number;
     restaurant: string;
+    customization?: {
+      size?: string;
+      selections?: Array<{
+        name: string;
+        price: number;
+        additions?: Array<{
+          item: {
+            name: string;
+            price: number;
+          };
+          quantity: number;
+        }>;
+      }>;
+      sandwiches?: Array<{
+        name: string;
+        count: number;
+      }>;
+      allAdditions?: Array<{
+        name: string;
+        quantity: number;
+        price: number;
+      }>;
+      additions?: Array<{
+        name: string;
+        quantity: number;
+        price: number;
+      }>;
+    };
   }>;
   totalAmount: number;
   status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';

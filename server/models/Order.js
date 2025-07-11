@@ -28,7 +28,35 @@ const orderItemSchema = new mongoose.Schema({
   dietaryInfo: [{
     type: String,
     enum: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'nut-free', 'halal', 'kosher']
-  }]
+  }],
+  customization: {
+    size: String,
+    selections: [{
+      name: String,
+      price: Number,
+      additions: [{
+        item: {
+          name: String,
+          price: Number
+        },
+        quantity: Number
+      }]
+    }],
+    sandwiches: [{
+      name: String,
+      count: Number
+    }],
+    allAdditions: [{
+      name: String,
+      quantity: Number,
+      price: Number
+    }],
+    additions: [{
+      name: String,
+      quantity: Number,
+      price: Number
+    }]
+  }
 });
 
 const orderSchema = new mongoose.Schema({

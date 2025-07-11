@@ -39,7 +39,7 @@ export type SushiItem = {
   name: string;
   description: string;
   price: number;
-  category: 'main';
+  category: 'main' | 'side' | 'modification';
   dietaryInfo: string[];
   image: string;
 };

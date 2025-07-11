@@ -27,7 +27,8 @@ export const useCart = () => {
         quantity: 1,
         price: menuItem.price,
         category: menuItem.category,
-        dietaryInfo: menuItem.dietaryInfo as any
+        dietaryInfo: menuItem.dietaryInfo as any,
+        customization: menuItem.customization
       };
       setCart([...cart, cartItem]);
     }
@@ -53,7 +54,8 @@ export const useCart = () => {
         quantity: quantity,
         price: menuItem.price,
         category: menuItem.category,
-        dietaryInfo: menuItem.dietaryInfo as any
+        dietaryInfo: menuItem.dietaryInfo as any,
+        customization: menuItem.customization
       }]);
     }
   };

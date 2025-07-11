@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Minus } from 'lucide-react';
 import { availableSushiItems, availableNigiriOptions, availableSashimiOptions } from '@/data/sushi';
+import SushiAdditionsModal from './SushiAdditionsModal';
+import { SushiItem } from '@/types/menu';
 
 interface SushiPlatterModalProps {
   isOpen: boolean;
@@ -15,11 +17,17 @@ interface SushiPlatterModalProps {
 export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, onAddToCart }: SushiPlatterModalProps) {
   const [selectedPlatterSize, setSelectedPlatterSize] = useState<any>(null);
   const [platterSelections, setPlatterSelections] = useState<any[]>([]);
+  const [showAdditionsModal, setShowAdditionsModal] = useState(false);
+  const [selectedItemForAdditions, setSelectedItemForAdditions] = useState<any>(null);
+  const [itemAdditions, setItemAdditions] = useState<{ [itemId: string]: { item: SushiItem; quantity: number }[] }>({});
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Handle click outside modal to close
+  // Handle click outside modal to close (but not when additions modal is open)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Don't close if additions modal is open
+      if (showAdditionsModal) return;
+
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
       }
@@ -29,13 +37,16 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showAdditionsModal]);
 
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
       setSelectedPlatterSize(null);
       setPlatterSelections([]);
+      setItemAdditions({});
+      setSelectedItemForAdditions(null);
+      setShowAdditionsModal(false);
     }
   }, [isOpen]);
 
@@ -109,18 +120,38 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
     }
   };
 
+  const calculateTotalPrice = () => {
+    const platterPrice = calculatePlatterPrice();
+    const additionsPrice = Object.values(itemAdditions).flat().reduce((total, addition) =>
+      total + (addition.item.price * addition.quantity), 0);
+    return platterPrice + additionsPrice;
+  };
+
   const handleAddToCart = () => {
     if (!selectedPlatterSize || platterSelections.length !== selectedPlatterSize.platters?.itemCount) {
       return;
     }
 
     const calculatedPrice = calculatePlatterPrice();
+    const allAdditions = Object.values(itemAdditions).flat();
+    const additionsPrice = allAdditions.reduce((total, addition) =>
+      total + (addition.item.price * addition.quantity), 0);
+    const totalPrice = calculatedPrice + additionsPrice;
+
+    // Create description with additions
+    let description = `${selectedPlatterSize.description}. Selected items: ${platterSelections.map(item => item.name).join(', ')}`;
+    if (allAdditions.length > 0) {
+      const additionsText = allAdditions.map(addition =>
+        addition.quantity > 1 ? `${addition.quantity}× ${addition.item.name}` : addition.item.name
+      ).join(', ');
+      description += `. Additions: ${additionsText}`;
+    }
 
     const platterItem = {
       id: `${selectedPlatter.id}-${selectedPlatterSize.id}-${Date.now()}`,
       name: `${selectedPlatter.name} - ${selectedPlatterSize.name}`,
-      description: `${selectedPlatterSize.description}. Selected items: ${platterSelections.map(item => item.name).join(', ')}`,
-      price: calculatedPrice,
+      description,
+      price: totalPrice,
       category: selectedPlatter.category,
       dietaryInfo: selectedPlatter.dietaryInfo,
       image: selectedPlatter.image,
@@ -129,12 +160,32 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
         size: selectedPlatterSize.name,
         selections: platterSelections.map(item => ({
           name: item.name,
-          price: item.price
+          price: item.price,
+          additions: itemAdditions[item.id] || []
+        })),
+        allAdditions: allAdditions.map(addition => ({
+          name: addition.item.name,
+          quantity: addition.quantity,
+          price: addition.item.price
         }))
       }
     };
     onAddToCart(platterItem);
     onClose();
+  };
+
+  const handleAdditionsConfirm = (additions: { item: SushiItem; quantity: number }[]) => {
+    if (selectedItemForAdditions) {
+      setItemAdditions(prev => ({
+        ...prev,
+        [selectedItemForAdditions.id]: additions
+      }));
+    }
+  };
+
+  const handleItemAdditionsClick = (item: any) => {
+    setSelectedItemForAdditions(item);
+    setShowAdditionsModal(true);
   };
 
   if (!isOpen || !selectedPlatter) return null;
@@ -220,19 +271,27 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
                       {Array.from(new Set(platterSelections.map(item => item.id))).map((itemId) => {
                         const item = platterSelections.find(selected => selected.id === itemId);
                         const count = getItemCount(item);
+                        const itemAdditionsCount = itemAdditions[itemId]?.length || 0;
                         return (
-                          <span
+                          <div
                             key={itemId}
-                            className="bg-white px-3 py-1 rounded-full text-sm border flex items-center gap-2"
+                            className="bg-white px-3 py-2 rounded-full text-sm border flex items-center gap-2"
                           >
-                            {item?.name} {count > 1 && `(×${count})`}
+                            <span className="font-medium">
+                              {item?.name} {count > 1 && `(×${count})`}
+                            </span>
+                            {itemAdditionsCount > 0 && (
+                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                {itemAdditionsCount}
+                              </span>
+                            )}
                             <button
                               onClick={() => handleItemRemove(item)}
                               className="text-red-500 hover:text-red-700"
                             >
                               <X size={14} />
                             </button>
-                          </span>
+                          </div>
                         );
                       })}
                     </div>
@@ -281,26 +340,42 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="flex items-center gap-2">
+                              {itemCount > 0 && (
+                                <button
+                                  onClick={() => handleItemRemove(item)}
+                                  className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                                >
+                                  <Minus size={16} />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleItemAdd(item)}
+                                disabled={!canAdd}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                                  canAdd
+                                    ? 'bg-green-500 text-white hover:bg-green-600'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                              >
+                                <Plus size={16} />
+                              </button>
+                            </div>
+                            {/* Individual Additions Button */}
                             {itemCount > 0 && (
                               <button
-                                onClick={() => handleItemRemove(item)}
-                                className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                                onClick={() => handleItemAdditionsClick(item)}
+                                className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded-full transition-colors whitespace-nowrap"
                               >
-                                <Minus size={16} />
+                                + Add
+                                {itemAdditions[item.id] && itemAdditions[item.id].length > 0 && (
+                                  <span className="ml-1 bg-blue-200 text-blue-800 px-1 rounded-full text-xs">
+                                    {itemAdditions[item.id].length}
+                                  </span>
+                                )}
                               </button>
                             )}
-                            <button
-                              onClick={() => handleItemAdd(item)}
-                              disabled={!canAdd}
-                              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                                canAdd
-                                  ? 'bg-green-500 text-white hover:bg-green-600'
-                                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                              }`}
-                            >
-                              <Plus size={16} />
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -308,6 +383,28 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
                   })}
                 </div>
               </div>
+
+              {/* Additions Button */}
+              {isComplete && (
+                <div className="pt-4 border-t">
+                  <div className="mb-4">
+                    <button
+                      onClick={() => setShowAdditionsModal(true)}
+                      className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-colors text-center"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Plus size={20} />
+                        <span className="font-semibold">Add Sides & Modifications</span>
+                      </div>
+                      {platterAdditions.length > 0 && (
+                        <div className="text-sm text-gray-600 mt-1">
+                          {platterAdditions.length} addition{platterAdditions.length !== 1 ? 's' : ''} selected (+${platterAdditions.reduce((total, addition) => total + (addition.item.price * addition.quantity), 0).toFixed(2)})
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Price Breakdown and Add to Cart */}
               {isComplete && (
@@ -353,15 +450,39 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
                       </>
                     )}
 
+                    {/* Show additions if any */}
+                    {Object.values(itemAdditions).flat().length > 0 && (
+                      <>
+                        <div className="border-t pt-2 mt-2">
+                          <h5 className="font-semibold text-sm mb-2">Additions:</h5>
+                          {Object.entries(itemAdditions).map(([itemId, additions]) => {
+                            if (!additions || additions.length === 0) return null;
+                            const item = platterSelections.find(selected => selected.id === itemId);
+                            return (
+                              <div key={itemId} className="mb-2">
+                                <div className="text-xs text-gray-600 mb-1">For {item?.name}:</div>
+                                {additions.map((addition, addIndex) => (
+                                  <div key={addIndex} className="flex justify-between text-sm mb-1 ml-2">
+                                    <span>{addition.item.name} {addition.quantity > 1 && `(×${addition.quantity})`}</span>
+                                    <span>${(addition.item.price * addition.quantity).toFixed(2)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+
                     <div className="border-t pt-2 mt-2 flex justify-between font-bold">
                       <span>Total:</span>
-                      <span>${calculatePlatterPrice().toFixed(2)}</span>
+                      <span>${calculateTotalPrice().toFixed(2)}</span>
                     </div>
                   </div>
 
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold">
-                      Total: ${calculatePlatterPrice().toFixed(2)}
+                      Total: ${calculateTotalPrice().toFixed(2)}
                     </div>
                     <button
                       onClick={handleAddToCart}
@@ -376,6 +497,17 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
           )}
         </div>
       </motion.div>
+
+      {/* Additions Modal */}
+      <SushiAdditionsModal
+        isOpen={showAdditionsModal}
+        onClose={() => {
+          setShowAdditionsModal(false);
+          setSelectedItemForAdditions(null);
+        }}
+        onAdditionsConfirm={handleAdditionsConfirm}
+        selectedItem={selectedItemForAdditions}
+      />
     </div>
   );
 }

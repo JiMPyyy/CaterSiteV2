@@ -105,3 +105,22 @@ export const availableSashimiOptions: SushiItem[] = [
   { id: 'hamachi-yellowtail-sashimi', name: 'Hamachi (Yellowtail) Sashimi', description: 'Fresh yellowtail sashimi.', price: 13.05, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Hamachi(YellowTail).jpg?v=1' },
   { id: 'salmon-sake-sashimi', name: 'Salmon (Sake) Sashimi', description: 'Fresh Atlantic salmon sashimi.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Salmon(Sake).jpg?v=1' }
 ];
+
+// Available sushi sides and additions
+export const sushiSidesAndAdditions: SushiItem[] = [
+  // Sauces
+  { id: 'eel-sauce', name: 'Eel Sauce', description: 'Sweet and savory eel sauce.', price: 1.50, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-eel-sauce.jpg' },
+  { id: 'yum-yum-sauce', name: 'Yum Yum Sauce', description: 'Creamy Japanese mayo-based sauce.', price: 1.50, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-yum-yum-sauce.jpg' },
+  { id: 'spicy-yum-yum-sauce', name: 'Spicy Yum Yum Sauce', description: 'Spicy version of our signature sauce.', price: 1.75, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-spicy-yum-yum-sauce.jpg' },
+  { id: 'ranch-dressing', name: 'Ranch Dressing', description: 'Classic ranch dressing.', price: 1.25, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-ranch-dressing.jpg' },
+
+  // Traditional Sides
+  { id: 'wasabi', name: 'Wasabi', description: 'Traditional Japanese horseradish paste.', price: 1.00, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-wasabi.jpg' },
+  { id: 'fresh-wasabi', name: 'Fresh Wasabi', description: 'Freshly grated wasabi root.', price: 2.50, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-fresh-wasabi.jpg' },
+  { id: 'pickled-ginger', name: 'Pickled Ginger', description: 'Traditional palate cleanser.', price: 1.00, category: 'side' as const, dietaryInfo: [], image: '/menu/Sushi/sides/on-demand-ginger.jpg' },
+
+  // Modifications
+  { id: 'avocado-add', name: 'Add Avocado', description: 'Fresh avocado addition.', price: 2.00, category: 'modification' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/on-demand-Avacado-roll.jpg' },
+  { id: 'cream-cheese-add', name: 'Add Cream Cheese', description: 'Creamy Philadelphia-style addition.', price: 1.50, category: 'modification' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/on-demand-philly-roll.jpg' },
+  { id: 'make-it-fried', name: 'Make it Fried', description: 'Tempura-fried preparation.', price: 1.50, category: 'modification' as const, dietaryInfo: [], image: '/menu/Sushi/on-demand-fire-tempura-crunch-roll.jpg' }
+];

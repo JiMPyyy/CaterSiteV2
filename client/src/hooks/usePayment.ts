@@ -67,7 +67,8 @@ export const usePayment = () => {
           price: item.price,
           quantity: item.quantity,
           category: item.category,
-          dietaryInfo: item.dietaryInfo
+          dietaryInfo: item.dietaryInfo,
+          customization: item.customization
         })),
         deliveryDate: deliveryInfo.date,
         deliveryTime: deliveryInfo.time,
