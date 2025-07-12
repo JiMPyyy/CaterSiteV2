@@ -183,6 +183,10 @@ export default function SamplerPlateModal({ isOpen, onClose, onAddToCart, select
                       src={sandwich.image}
                       alt={sandwich.name}
                       className="w-full h-32 object-cover rounded-lg mb-3"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center';
+                        console.log('Failed to load sandwich image:', sandwich.image);
+                      }}
                     />
                     <h4 className="font-semibold text-sm mb-2">{sandwich.name}</h4>
                     {sandwich.isWagyu && (

@@ -327,6 +327,10 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
                             src={item.image}
                             alt={item.name}
                             className="w-16 h-16 object-cover rounded-lg"
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop&crop=center';
+                              console.log('Failed to load sushi image:', item.image);
+                            }}
                           />
                           <div className="flex-1">
                             <h4 className="font-semibold text-sm">{item.name}</h4>

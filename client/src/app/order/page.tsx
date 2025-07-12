@@ -21,6 +21,7 @@ import SamplerPlateModal from '@/components/modals/SamplerPlateModal';
 import TraySelectionModal from '@/components/modals/TraySelectionModal';
 import SodaFlavorModal from '@/components/modals/SodaFlavorModal';
 import SushiPlatterModal from '@/components/modals/SushiPlatterModal';
+import SaladCustomizationModal from '@/components/modals/SaladCustomizationModal';
 
 // Import custom hooks
 import { useCart } from '@/hooks/useCart';
@@ -113,6 +114,8 @@ export default function OrderPage() {
   const [selectedSoda, setSelectedSoda] = useState<any>(null);
   const [showSushiPlatterModal, setShowSushiPlatterModal] = useState(false);
   const [selectedSushiPlatter, setSelectedSushiPlatter] = useState<any>(null);
+  const [showSaladModal, setShowSaladModal] = useState(false);
+  const [selectedSalad, setSelectedSalad] = useState<any>(null);
 
 
 
@@ -424,7 +427,8 @@ export default function OrderPage() {
                             alt={item.name}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {
-                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.src = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center';
+                              console.log('Failed to load image:', item.image);
                             }}
                           />
                           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(15, 15, 15, 0.2), transparent)' }}></div>
@@ -480,6 +484,9 @@ export default function OrderPage() {
                                   } else if (item.id === 'cap-soda') {
                                     setSelectedSoda(item);
                                     setShowSodaModal(true);
+                                  } else if (item.saladOptions) {
+                                    setSelectedSalad(item);
+                                    setShowSaladModal(true);
                                   } else if (item.id === 'sushi-platter' || item.id === 'sushi-nigiri-platter' || item.id === 'sushi-sashimi-platter') {
                                     setSelectedSushiPlatter(item);
                                     setShowSushiPlatterModal(true);
@@ -506,6 +513,9 @@ export default function OrderPage() {
                                 } else if (item.id === 'cap-soda') {
                                   setSelectedSoda(item);
                                   setShowSodaModal(true);
+                                } else if (item.saladOptions) {
+                                  setSelectedSalad(item);
+                                  setShowSaladModal(true);
                                 } else if (item.id === 'sushi-platter' || item.id === 'sushi-nigiri-platter' || item.id === 'sushi-sashimi-platter') {
                                   setSelectedSushiPlatter(item);
                                   setShowSushiPlatterModal(true);
@@ -531,6 +541,119 @@ export default function OrderPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Party Salads Section */}
+              {currentMenu.filter(item => item.category === 'salad').length > 0 && (
+                <div className="mb-12">
+                  <div className="flex items-center mb-8">
+                    <div className="w-12 h-12 text-white rounded-xl flex items-center justify-center font-bold text-lg mr-4" style={{ backgroundColor: 'rgb(15, 15, 15)' }}>
+                      🥗
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-bold" style={{ color: 'rgb(15, 15, 15)' }}>Party Salads</h3>
+                      <p style={{ color: 'rgb(113, 113, 122)' }}>Fresh, healthy options for your catering needs</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {currentMenu.filter(item => item.category === 'salad').map((item) => (
+                      <motion.div
+                        key={item.id}
+                        whileHover={{ scale: 1.03, y: -5 }}
+                        className="group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full"
+                        style={{
+                          backgroundColor: 'rgb(255, 255, 255)',
+                          border: '2px solid rgb(113, 113, 122)'
+                        }}
+                      >
+                        {item.image && (
+                          <div className="h-40 w-full overflow-hidden relative">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              onError={(e) => {
+                                e.currentTarget.src = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center';
+                                console.log('Failed to load image:', item.image);
+                              }}
+                            />
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(15, 15, 15, 0.2), transparent)' }}></div>
+                          </div>
+                        )}
+
+                        <div className="p-6 flex-1 flex flex-col">
+                          <h4 className="text-xl font-bold mb-2" style={{ color: 'rgb(15, 15, 15)' }}>{item.name}</h4>
+                          <p className="text-sm mb-4 flex-1" style={{ color: 'rgb(113, 113, 122)' }}>{item.description}</p>
+
+                          {/* Dietary Info */}
+                          {item.dietaryInfo.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {item.dietaryInfo.map((info) => (
+                                <span key={info} className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                                  {info}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Add to Cart */}
+                          <div className="flex justify-center">
+                            {cart.find(cartItem => cartItem.id === item.id) ? (
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => removeFromCart(item.id)}
+                                  className="w-10 h-10 text-white rounded-lg transition-all duration-200 flex items-center justify-center hover:scale-105"
+                                  style={{ backgroundColor: 'rgb(239, 68, 68)' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(220, 38, 38)'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(239, 68, 68)'}
+                                >
+                                  <Minus size={16} />
+                                </button>
+                                <span className="text-lg font-bold min-w-[2rem] text-center" style={{ color: 'rgb(15, 15, 15)' }}>
+                                  {cart.find(cartItem => cartItem.id === item.id)?.quantity || 0}
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    if (item.saladOptions) {
+                                      setSelectedSalad(item);
+                                      setShowSaladModal(true);
+                                    } else {
+                                      addToCart(item);
+                                    }
+                                  }}
+                                  className="w-10 h-10 text-white rounded-lg transition-all duration-200 flex items-center justify-center hover:scale-105"
+                                  style={{ backgroundColor: 'rgb(15, 15, 15)' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(15, 15, 15)'}
+                                >
+                                  <Plus size={16} />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  if (item.saladOptions) {
+                                    setSelectedSalad(item);
+                                    setShowSaladModal(true);
+                                  } else {
+                                    addToCart(item);
+                                  }
+                                }}
+                                className="w-full text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-lg hover:scale-105 hover:shadow-lg"
+                                style={{ backgroundColor: 'rgb(15, 15, 15)' }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(39, 39, 42)'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(15, 15, 15)'}
+                              >
+                                <Plus size={20} />
+                                Add to Cart
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Desserts Section */}
               {currentMenu.filter(item => item.category === 'dessert').length > 0 && (
@@ -564,7 +687,8 @@ export default function OrderPage() {
                                 item.id === 'cap-cookie-brookie-tray' ? 'object-[center_70%]' : ''
                               }`}
                               onError={(e) => {
-                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.src = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center';
+                                console.log('Failed to load image:', item.image);
                               }}
                             />
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(15, 15, 15, 0.2), transparent)' }}></div>
@@ -673,7 +797,8 @@ export default function OrderPage() {
                               alt={item.name}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                               onError={(e) => {
-                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.src = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop&crop=center';
+                                console.log('Failed to load image:', item.image);
                               }}
                             />
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(15, 15, 15, 0.2), transparent)' }}></div>
@@ -1284,6 +1409,15 @@ export default function OrderPage() {
           selectedPlatter={selectedSushiPlatter}
           onAddToCart={(item) => {
             addToCart(item);
+          }}
+        />
+
+        <SaladCustomizationModal
+          isOpen={showSaladModal}
+          onClose={() => setShowSaladModal(false)}
+          salad={selectedSalad}
+          onAddToCart={(item) => {
+            addCustomItemToCart(item);
           }}
         />
       </div>

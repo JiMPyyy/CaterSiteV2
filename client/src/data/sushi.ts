@@ -81,29 +81,29 @@ export const availableSushiItems: SushiItem[] = [
 
 // Available nigiri options for nigiri platters
 export const availableNigiriOptions: SushiItem[] = [
-  { id: 'ahi-nigiri', name: 'Ahi Nigiri', description: 'Premium ahi tuna over rice.', price: 11.79, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-ahi.jpg?v=1' },
-  { id: 'albacore-nigiri', name: 'Albacore Nigiri', description: 'White tuna over seasoned rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-albacore.jpg?v=1' },
-  { id: 'ebi-shrimp-nigiri', name: 'Ebi (Shrimp) Nigiri', description: 'Cooked shrimp over rice.', price: 11.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-ebi(shrimp).jpg?v=1' },
-  { id: 'escolar-super-white-nigiri', name: 'Escolar (Super White) Nigiri', description: 'Buttery super white fish over rice.', price: 12.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-escolar(Super White).jpg?v=1' },
-  { id: 'garlic-tuna-nigiri', name: 'Garlic Tuna Nigiri', description: 'Ahi tuna with garlic seasoning over rice.', price: 12.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Garlic-Tuna.jpg?v=1' },
-  { id: 'hamachi-yellowtail-nigiri', name: 'Hamachi (Yellowtail) Nigiri', description: 'Fresh yellowtail over rice.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Hamachi(yellowtail).jpg?v=1' },
-  { id: 'hirame-halibut-nigiri', name: 'Hirame (Halibut) Nigiri', description: 'Delicate halibut over rice.', price: 13.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-hirame(halibut).jpg?v=1' },
-  { id: 'salmon-nigiri', name: 'Salmon (Sake) Nigiri', description: 'Fresh Atlantic salmon over rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-salmon(sake).jpg?v=1' },
-  { id: 'salmon-heaven-nigiri', name: 'Salmon Heaven Nigiri', description: 'Premium salmon preparation over rice.', price: 12.75, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-salmon-heaven.jpg?v=1' },
-  { id: 'smoked-paprika-salmon-nigiri', name: 'Smoked Paprika Salmon Nigiri', description: 'Salmon with smoked paprika over rice.', price: 12.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Smoked-Paprika-Salmon.jpg?v=1' },
-  { id: 'tamago-sweet-egg-nigiri', name: 'Tamago (Sweet Egg) Nigiri', description: 'Sweet Japanese omelet over rice.', price: 7.88, category: 'main' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/nigiri/on-demand-nigiri-Tamago(Sweet egg).jpg?v=1' },
-  { id: 'unagi-eel-nigiri', name: 'Unagi (Eel) Nigiri', description: 'Grilled eel with sweet sauce over rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-unagi(eel).jpg?v=1' },
-  { id: 'yuzu-yellowtail-nigiri', name: 'Yuzu Yellowtail Nigiri', description: 'Yellowtail with yuzu citrus over rice.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-yuzu-yellowtail.jpg?v=1' }
+  { id: 'ahi-nigiri', name: 'Ahi Nigiri', description: 'Premium ahi tuna over rice.', price: 11.79, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-ahi.jpg' },
+  { id: 'albacore-nigiri', name: 'Albacore Nigiri', description: 'White tuna over seasoned rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-albacore.jpg' },
+  { id: 'ebi-shrimp-nigiri', name: 'Ebi (Shrimp) Nigiri', description: 'Cooked shrimp over rice.', price: 11.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-ebi(shrimp).jpg' },
+  { id: 'escolar-super-white-nigiri', name: 'Escolar (Super White) Nigiri', description: 'Buttery super white fish over rice.', price: 12.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-escolar(Super White).jpg' },
+  { id: 'garlic-tuna-nigiri', name: 'Garlic Tuna Nigiri', description: 'Ahi tuna with garlic seasoning over rice.', price: 12.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Garlic-Tuna.jpg' },
+  { id: 'hamachi-yellowtail-nigiri', name: 'Hamachi (Yellowtail) Nigiri', description: 'Fresh yellowtail over rice.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Hamachi(yellowtail).jpg' },
+  { id: 'hirame-halibut-nigiri', name: 'Hirame (Halibut) Nigiri', description: 'Delicate halibut over rice.', price: 13.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-hirame(halibut).jpg' },
+  { id: 'salmon-nigiri', name: 'Salmon (Sake) Nigiri', description: 'Fresh Atlantic salmon over rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-salmon(sake).jpg' },
+  { id: 'salmon-heaven-nigiri', name: 'Salmon Heaven Nigiri', description: 'Premium salmon preparation over rice.', price: 12.75, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-salmon-heaven.jpg' },
+  { id: 'smoked-paprika-salmon-nigiri', name: 'Smoked Paprika Salmon Nigiri', description: 'Salmon with smoked paprika over rice.', price: 12.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-Smoked-Paprika-Salmon.jpg' },
+  { id: 'tamago-sweet-egg-nigiri', name: 'Tamago (Sweet Egg) Nigiri', description: 'Sweet Japanese omelet over rice.', price: 7.88, category: 'main' as const, dietaryInfo: ['vegetarian'], image: '/menu/Sushi/nigiri/on-demand-nigiri-Tamago(Sweet egg).jpg' },
+  { id: 'unagi-eel-nigiri', name: 'Unagi (Eel) Nigiri', description: 'Grilled eel with sweet sauce over rice.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-unagi(eel).jpg' },
+  { id: 'yuzu-yellowtail-nigiri', name: 'Yuzu Yellowtail Nigiri', description: 'Yellowtail with yuzu citrus over rice.', price: 13.50, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/nigiri/on-demand-nigiri-yuzu-yellowtail.jpg' }
 ];
 
 // Available sashimi options for sashimi platters
 export const availableSashimiOptions: SushiItem[] = [
-  { id: 'ahi-sashimi', name: 'Ahi Sashimi', description: 'Premium ahi tuna slices.', price: 12.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Ahi.jpg?v=1' },
-  { id: 'albacore-sashimi', name: 'Albacore Sashimi', description: 'White tuna sashimi slices.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Albacore.jpg?v=1' },
-  { id: 'ebi-shrimp-sashimi', name: 'Ebi (Shrimp) Sashimi', description: 'Cooked shrimp sashimi.', price: 10.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Ebi(Shrimp).jpg?v=1' },
-  { id: 'garlic-tuna-sashimi', name: 'Garlic Tuna Sashimi', description: 'Ahi tuna with garlic seasoning.', price: 13.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Garlic-Tuna.jpg?v=1' },
-  { id: 'hamachi-yellowtail-sashimi', name: 'Hamachi (Yellowtail) Sashimi', description: 'Fresh yellowtail sashimi.', price: 13.05, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Hamachi(YellowTail).jpg?v=1' },
-  { id: 'salmon-sake-sashimi', name: 'Salmon (Sake) Sashimi', description: 'Fresh Atlantic salmon sashimi.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Salmon(Sake).jpg?v=1' }
+  { id: 'ahi-sashimi', name: 'Ahi Sashimi', description: 'Premium ahi tuna slices.', price: 12.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Ahi.jpg' },
+  { id: 'albacore-sashimi', name: 'Albacore Sashimi', description: 'White tuna sashimi slices.', price: 11.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Albacore.jpg' },
+  { id: 'ebi-shrimp-sashimi', name: 'Ebi (Shrimp) Sashimi', description: 'Cooked shrimp sashimi.', price: 10.95, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Ebi(Shrimp).jpg' },
+  { id: 'garlic-tuna-sashimi', name: 'Garlic Tuna Sashimi', description: 'Ahi tuna with garlic seasoning.', price: 13.25, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Garlic-Tuna.jpg' },
+  { id: 'hamachi-yellowtail-sashimi', name: 'Hamachi (Yellowtail) Sashimi', description: 'Fresh yellowtail sashimi.', price: 13.05, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Hamachi(YellowTail).jpg' },
+  { id: 'salmon-sake-sashimi', name: 'Salmon (Sake) Sashimi', description: 'Fresh Atlantic salmon sashimi.', price: 12.15, category: 'main' as const, dietaryInfo: [], image: '/menu/Sushi/Sashimi/on-demand-Sashimi-Salmon(Sake).jpg' }
 ];
 
 // Available sushi sides and additions

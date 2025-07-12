@@ -3,7 +3,7 @@ export type MenuItem = {
   name: string;
   description?: string;
   price: number;
-  category: 'main' | 'dessert' | 'beverage';
+  category: 'main' | 'dessert' | 'beverage' | 'salad';
   dietaryInfo: string[];
   image: string;
   isCustomizable?: boolean;
@@ -31,6 +31,21 @@ export type MenuItem = {
     piecesPerOption?: number;
     totalPieces?: number;
     type?: 'mixed' | 'nigiri' | 'sashimi';
+  };
+  saladOptions?: {
+    hasSpecialInstructions?: boolean;
+    hasCustomToppings?: boolean;
+    availableToppings?: string[];
+    hasDressingSelection?: boolean;
+    defaultDressing?: string;
+    availableDressings?: string[];
+    extraDressingPrice?: number;
+    hasRemovableToppings?: boolean;
+    removableToppings?: string[];
+    hasAddCheese?: boolean;
+    cheeseOptions?: Array<{ name: string; price: number }>;
+    hasAddMeat?: boolean;
+    meatOptions?: Array<{ name: string; price: number }>;
   };
 };
 

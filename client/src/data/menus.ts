@@ -90,8 +90,150 @@ export const restaurantMenus: RestaurantMenus = {
         price: 73.99, // Base price for small (Build Your Own pricing)
         category: 'main' as const,
         dietaryInfo: [],
-        image: '/menu/Capriottis-Bobbie-Tray.webp', // Placeholder until you provide sampler image
+        image: '/menu/Capriottis-DelawaresFinest-Tray.webp', // Using Delaware's Finest as it shows variety
         isCustomizable: true
+      },
+
+      // Salad Trays
+      {
+        id: 'cap-balsamic-chicken-tray',
+        name: 'Balsamic Chicken Party Tray',
+        description: 'Grilled chicken breast, mixed greens, gorgonzola cheese crumbles, glazed cranberry walnuts, and balsamic dressing. Serves 6-8. For large orders, please call the shop.',
+        price: 35.99,
+        category: 'salad' as const,
+        dietaryInfo: [],
+        image: '/menu/salad/caps-balsamic-chicken-party-tray-salad.avif',
+        isCustomizable: true,
+        saladOptions: {
+          hasSpecialInstructions: true,
+          hasDressingSelection: true,
+          defaultDressing: 'Balsamic Vinaigrette',
+          availableDressings: ['Balsamic Vinaigrette', 'BBQ Sauce', 'Ranch Dressing', 'Red Wine Vinaigrette'],
+          extraDressingPrice: 2.00,
+          hasRemovableToppings: true,
+          removableToppings: [
+            'No Gorgonzola Crumbles',
+            'No Cranberry Walnuts'
+          ]
+        }
+      },
+      {
+        id: 'cap-bbq-turkey-tray',
+        name: 'BBQ Turkey Party Tray',
+        description: 'Fresh roasted turkey, mixed greens, crispy cheddar onions, diced tomatoes, corn, black beans, BBQ sauce, and chipotle ranch dressing. Serves 6-8. For large orders, please call the shop.',
+        price: 35.99,
+        category: 'salad' as const,
+        dietaryInfo: [],
+        image: '/menu/salad/caps-BBQ-Turkey-party-tray-salad.avif',
+        isCustomizable: true,
+        saladOptions: {
+          hasSpecialInstructions: true,
+          hasDressingSelection: true,
+          defaultDressing: 'Ranch Dressing',
+          availableDressings: ['Balsamic Vinaigrette', 'BBQ Sauce', 'Ranch Dressing', 'Red Wine Vinaigrette'],
+          extraDressingPrice: 2.00,
+          hasRemovableToppings: true,
+          removableToppings: [
+            'No Corn & Black Bean Mix',
+            'No Diced Tomatoes',
+            'No Crispy Cheddar Onions'
+          ]
+        }
+      },
+      {
+        id: 'cap-bbq-chicken-tray',
+        name: 'BBQ Chicken Party Tray',
+        description: 'Fresh grilled chicken breast, mixed greens, crispy cheddar onions, diced tomatoes, corn, black beans, BBQ sauce, and chipotle ranch dressing. Serves 6-8. For large orders, please call the shop.',
+        price: 35.99,
+        category: 'salad' as const,
+        dietaryInfo: [],
+        image: '/menu/salad/caps-BBQ-Chicken-party-tray-salad.avif',
+        isCustomizable: true,
+        saladOptions: {
+          hasSpecialInstructions: true,
+          hasDressingSelection: true,
+          defaultDressing: 'Ranch Dressing',
+          availableDressings: ['Balsamic Vinaigrette', 'BBQ Sauce', 'Ranch Dressing', 'Red Wine Vinaigrette'],
+          extraDressingPrice: 2.00,
+          hasRemovableToppings: true,
+          removableToppings: [
+            'No Corn & Black Bean Mix',
+            'No Diced Tomatoes',
+            'No Crispy Cheddar Onions'
+          ]
+        }
+      },
+      {
+        id: 'cap-chopped-tray',
+        name: "CAP'S Chopped Party Tray",
+        description: 'Fresh chopped lettuce, tomatoes, provolone cheese, salami, capicola, prosciuttini, black olives, and red wine vinaigrette. Serves 6-8. For large orders, please call the shop.',
+        price: 35.99,
+        category: 'salad' as const,
+        dietaryInfo: [],
+        image: '/menu/salad/caps-Chopped-party-tray-salad.avif',
+        isCustomizable: true,
+        saladOptions: {
+          hasSpecialInstructions: true,
+          hasDressingSelection: true,
+          defaultDressing: 'Red Wine Vinaigrette',
+          availableDressings: ['Balsamic Vinaigrette', 'BBQ Sauce', 'Ranch Dressing', 'Red Wine Vinaigrette'],
+          extraDressingPrice: 2.00,
+          hasRemovableToppings: true,
+          removableToppings: [
+            'No Diced Tomatoes',
+            'No Diced Provolone',
+            'No Black Olives'
+          ]
+        }
+      },
+      {
+        id: 'cap-creation-tray',
+        name: "CAP'S Creation Party Tray",
+        description: 'Garden salad with mixed greens and your choice of toppings. Serves 6-8. For large orders, please call the shop.',
+        price: 35.99,
+        category: 'salad' as const,
+        dietaryInfo: ['vegetarian'],
+        image: '/menu/salad/caps-Creation-party-tray-salad.avif',
+        isCustomizable: true,
+        saladOptions: {
+          hasSpecialInstructions: true,
+          hasCustomToppings: true,
+          hasDressingSelection: true,
+          defaultDressing: 'Balsamic Vinaigrette',
+          availableDressings: ['Balsamic Vinaigrette', 'BBQ Sauce', 'Ranch Dressing', 'Red Wine Vinaigrette'],
+          extraDressingPrice: 2.00,
+          availableToppings: [
+            'Black Olives',
+            'Crispy Cheddar Onions',
+            'Mushrooms',
+            'Cranberry Walnuts',
+            'Diced Tomatoes',
+            'Raw Onion',
+            'Sweet Peppers',
+            'Whole Hots',
+            'Crushed Pepper Relish',
+            'Corn & Black Bean Mix'
+          ],
+          hasAddCheese: true,
+          cheeseOptions: [
+            { name: 'American', price: 1.00 },
+            { name: 'Provolone', price: 2.00 },
+            { name: 'Gorgonzola Crumbles', price: 2.00 },
+            { name: 'Swiss', price: 1.00 }
+          ],
+          hasAddMeat: true,
+          meatOptions: [
+            { name: 'Tuna', price: 5.75 },
+            { name: 'Turkey', price: 5.50 },
+            { name: 'Veggie Turkey', price: 5.75 },
+            { name: 'Diced Italian Meat', price: 5.50 },
+            { name: 'Diced Chicken', price: 5.50 },
+            { name: 'Wagyu', price: 5.75 },
+            { name: 'Genoa Salami', price: 5.75 },
+            { name: 'Peppered Ham', price: 5.75 },
+            { name: 'Bacon', price: 4.00 }
+          ]
+        }
       },
       {
         id: 'cap-cookie-tray',
