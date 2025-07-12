@@ -396,9 +396,9 @@ export default function SushiPlatterModal({ isOpen, onClose, selectedPlatter, on
                         <Plus size={20} />
                         <span className="font-semibold">Add Sides & Modifications</span>
                       </div>
-                      {platterAdditions.length > 0 && (
+                      {Object.values(itemAdditions).flat().length > 0 && (
                         <div className="text-sm text-gray-600 mt-1">
-                          {platterAdditions.length} addition{platterAdditions.length !== 1 ? 's' : ''} selected (+${platterAdditions.reduce((total, addition) => total + (addition.item.price * addition.quantity), 0).toFixed(2)})
+                          {Object.values(itemAdditions).flat().length} addition{Object.values(itemAdditions).flat().length !== 1 ? 's' : ''} selected (+${Object.values(itemAdditions).flat().reduce((total, addition) => total + (addition.item.price * addition.quantity), 0).toFixed(2)})
                         </div>
                       )}
                     </button>

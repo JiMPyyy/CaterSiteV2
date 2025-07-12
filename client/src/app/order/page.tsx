@@ -82,6 +82,27 @@ export default function OrderPage() {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const timePickerRef = useRef<HTMLDivElement>(null);
 
+  // Set initial scroll position to center around 12:00 PM when opened
+  useEffect(() => {
+    if (showTimePicker && timePickerRef.current) {
+      // Find the 12:00 PM option (value would be "12:00")
+      const noonOption = timePickerRef.current.querySelector('[data-time="12:00"]') as HTMLElement;
+      if (noonOption) {
+        // Set scroll position immediately without animation
+        setTimeout(() => {
+          const container = timePickerRef.current!;
+          const containerHeight = container.clientHeight;
+          const optionTop = noonOption.offsetTop;
+          const optionHeight = noonOption.clientHeight;
+
+          // Calculate scroll position to center the noon option
+          const scrollTop = optionTop - (containerHeight / 2) + (optionHeight / 2);
+          container.scrollTop = scrollTop;
+        }, 10); // Very small delay to ensure DOM is ready
+      }
+    }
+  }, [showTimePicker]);
+
   // Modal states - simplified
   const [showSamplerSizeModal, setShowSamplerSizeModal] = useState(false);
   const [showSamplerModal, setShowSamplerModal] = useState(false);
@@ -917,10 +938,11 @@ export default function OrderPage() {
                               </div>
 
                               {/* Time options */}
-                              <div className="p-1">
+                              <div className="p-1" ref={timePickerRef}>
                                 {timeOptions.map((time) => (
                                   <div
                                     key={time.value}
+                                    data-time={time.value}
                                     onClick={() => handleTimeSelect(time.value)}
                                     className="px-3 py-2 text-sm cursor-pointer rounded transition-colors duration-150"
                                     style={{
@@ -1050,7 +1072,7 @@ export default function OrderPage() {
         {/* Payment Modal */}
         {showPayment && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
             onClick={() => setShowPayment(false)}
           >
             <motion.div

@@ -78,16 +78,31 @@ export const authService = {
   // Login user
   login: async (credentials: LoginData): Promise<AuthResponse> => {
     try {
+      console.log('Auth service: Attempting login with:', { username: credentials.username, password: '[HIDDEN]' });
+      console.log('Auth service: API URL:', `${process.env.NEXT_PUBLIC_API_URL}/auth/login`);
+
       const response = await api.post('/auth/login', credentials);
-      
+
+      console.log('Auth service: Login response:', response.data);
+
       // Store token
       if (response.data.data.token) {
         tokenManager.set(response.data.data.token);
       }
-      
+
       return response.data;
     } catch (error: any) {
-      throw error.response?.data || { message: 'Login failed' };
+      console.error('Auth service: Login error:', error);
+      console.error('Auth service: Error response:', error.response?.data);
+      console.error('Auth service: Error status:', error.response?.status);
+      console.error('Auth service: Error message:', error.message);
+
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.errors?.[0] ||
+                          error.message ||
+                          'Login failed';
+
+      throw { message: errorMessage };
     }
   },
 
